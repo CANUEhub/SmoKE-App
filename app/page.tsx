@@ -1,95 +1,135 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
+
+import Map, { Marker, NavigationControl, GeolocateControl } from "react-map-gl";
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import RoomOutlinedIcon from '@mui/icons-material/RoomOutlined';
+import "mapbox-gl/dist/mapbox-gl.css";
+import NavBar from "./ui/navbar";
+import PM25Chart from "./ui/pm25barchart";
+import BiaxialLineChart from "./ui/dailylinechart";
+import { useRouter } from 'next/navigation'
+import { Box, Container } from '@mui/system';
+import Paper from '@mui/material/Paper';
+
+
+import settlements from "../public/data/settlements.json";
+import classes from "./page.module.css";
+
+interface GeoJSONFeature {
+  type: string;
+  properties: {
+    name: string;
+  };
+  geometry: {
+    type: string;
+    coordinates: [number, number];
+  };
+}
 
 export default function Home() {
+
+  const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+  const features = settlements.features;
+  const [community, setCommunity] = useState('');
+  const [communityName, setCommunityName] = useState('');
+  const mapRef = useRef(null);
+  const router = useRouter()
+
+  // useEffect(() => {
+  //   fetch('http://147.182.150.83:8443/api/3/action/datastore_search?resource_id=ecf18f46-ec4f-43f5-85ec-02347768e153&limit=5')
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setData(data)
+  //       setLoading(false)
+  //     })
+  // }, [])
+
+  const handleCommunityChange = (value) => {
+    if(value === ''){
+      return;
+    }
+    console.log("handleCommunityChange value", value)
+    const sett = features.find((feature,index) => {
+      return feature.id == value
+    });
+    const evt = new Event("click");
+    zoomToSelectedLoc(evt, sett, value);
+  }
+
+  const handleLayerChange = (value) => {
+    if(value === ''){
+      return;
+    }
+    console.log("handleLayerChange value", value)
+  }
+
+
+  const zoomToSelectedLoc = (e, sett, index) => {
+    // stop event bubble-up which triggers unnecessary events
+    e.stopPropagation();
+    setCommunity(index.toString());
+    setCommunityName(sett.properties.community_name);
+    console.log("Sett", sett.properties.community_name);
+    mapRef.current.flyTo({ center: [sett.geometry.coordinates[0], sett.geometry.coordinates[1]], zoom: 10 });
+    //router.push("/dashboard");
+      };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+      <main className={classes.mainStyle}>
+        <NavBar onChildStateChange={handleCommunityChange} onLayerChange={handleLayerChange} ></NavBar>
+
+        <Map
+          ref={mapRef}
+          mapboxAccessToken={mapboxToken}
+          mapStyle="mapbox://styles/mapbox/light-v11"
+          style={{zIndex: 1, height: "100%", width: "100%"}}
+          initialViewState={{ latitude: 60.582, longitude: -105.599, zoom: 4 }}
+          maxZoom={20}
+          minZoom={3}
+        >
+
+          {features.map((sett, index: number) => {
+            return (
+              <Marker
+                key={index}
+                latitude={sett.geometry.coordinates[1]}
+                longitude={sett.geometry.coordinates[0]}
+                color="orange"
+              >
+                <button
+                  type="button"
+                  className="cursor-pointer"
+                  onClick={(e) => zoomToSelectedLoc(e, sett, index)}
+                >
+                <RoomOutlinedIcon/>
+                </button>
+              </Marker>
+
+            );
+
+          })}
+
+
+        </Map>
+        
+        {community && 
+        <div className="barCharts" style={{position: "absolute", top: 100, left: 0, zIndex: 2}}>
+        <Paper variant="elevation"><h2>{communityName}</h2></Paper>
+        <Paper variant="elevation"><PM25Chart community={community}></PM25Chart></Paper>
         </div>
-      </div>
+        
+        } 
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+        {community && 
+        <div className="barCharts" style={{position: "absolute", bottom: 0, left: 0, zIndex: 2}}>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+        <Paper variant="elevation"><BiaxialLineChart/></Paper>
+        </div>
+        
+        } 
+        
+        
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      </main>
   )
 }
