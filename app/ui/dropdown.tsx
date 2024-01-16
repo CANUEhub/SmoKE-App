@@ -37,7 +37,7 @@ export default function Dropdown({ onChildStateChange }) {
         label=""
         placeholder="Search City"
         InputProps={{ ...params.InputProps,
-          startAdornment: ( <InputAdornment position="start"> <SearchIcon color="info" />
+          startAdornment: ( <InputAdornment position="start"> <SearchIcon color="black" />
           </InputAdornment> )}} />
       }}
       onChange={(event: any, newValue) => {

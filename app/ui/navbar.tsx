@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -16,6 +17,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
+import Link from 'next/link'
 import Dropdown from './dropdown';
 import LayerDropdown from './layerDropdown';
 
@@ -35,29 +37,7 @@ const Search = styled('div')(({ theme }) => ({
   },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
-  },
-}));
 
 export default function NavBar({ onChildStateChange, onLayerChange }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -68,6 +48,16 @@ export default function NavBar({ onChildStateChange, onLayerChange }) {
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const [community, setCommunity] = useState('');
   const [layer, setLayer] = useState('');
+  const pageStrings = ['About', 'Current Forecast','Historical Data', 'Advisories', 'Contact Us' ];
+  const pages = ['about', 'current', 'historical','advisories', 'contact'];
+
+  const linkObj = {
+    'about': {url:'About'},
+    'current': {url:'Current Forecast'},
+    'historical': {url:'Historical Data'},
+    'advisories': {url:'Advisories'},
+    'contact': {url:'Contact Us'}
+  };
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -85,10 +75,11 @@ export default function NavBar({ onChildStateChange, onLayerChange }) {
     onChildStateChange(newValue);
   }
 
-  const handleLayerChange = (layer) => {
-    const newValue = layer;
-    setCommunity(newValue);
-    onLayerChange(newValue);
+  const handleLayerChange = (newlayer) => {
+    console.log('navbar', newlayer);
+    const newValue = newlayer;
+    setLayer(newValue);
+    onLayerChange(newlayer);
   }
 
   const handleMenuClose = () => {
@@ -96,31 +87,12 @@ export default function NavBar({ onChildStateChange, onLayerChange }) {
     handleMobileMenuClose();
   };
 
+
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
   const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
@@ -198,8 +170,15 @@ export default function NavBar({ onChildStateChange, onLayerChange }) {
           <Search>
             <Dropdown onChildStateChange={handleCommunityChange} ></Dropdown>
           </Search>
-            <LayerDropdown onChildStateChange={handleLayerChange}/>
+            <LayerDropdown onChildLayerChange={handleLayerChange}/>
           <Box sx={{ flexGrow: 1 }} />
+          {pages.map((page) => (
+                <MenuItem key={page} onClick={handleProfileMenuOpen}>
+                  <Link href={"/"+ page}>
+                    <Typography textAlign="center">{linkObj[page].url}</Typography>
+                  </Link>
+                </MenuItem>
+              ))}
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
@@ -215,7 +194,6 @@ export default function NavBar({ onChildStateChange, onLayerChange }) {
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
     </Box>
   );
 }

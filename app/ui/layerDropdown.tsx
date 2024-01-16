@@ -8,21 +8,20 @@ import Select from '@mui/material/Select';
 import LayerTypes from '../../public/data/raster_data.json'
 
 
-export default function LayerDropdown({ onChildStateChange }) {
+export default function LayerDropdown({ onChildLayerChange }) {
     const [layerID, setLayerID] = useState('');
-    const [layerYear, setLayerYear] = useState(0);
 
     const LayerList = LayerTypes;
 
-      const handleLayerChange = (newValue) => {
+    const handleLayerChange = (newValue) => {
 
         if(!newValue){
           return;
         }
         setLayerID(newValue);
-        console.log("newValue", newValue);
-        onChildStateChange(layerID);
-      };
+        console.log("newValue layerdropdown", newValue);
+        onChildLayerChange(newValue);
+    };
 
 
   return (
@@ -33,15 +32,15 @@ export default function LayerDropdown({ onChildStateChange }) {
             id="grouped-native-select" 
             label="Raster Layer"
             value={layerID}
-            onChange={(event: any, newValue) => {
-                console.log('hit', event.target.value)
+            onChange={(event: any) => {
+                console.log('hit2', event.target.value)
                 handleLayerChange(event.target.value);
               }}>
           <option aria-label="None" value="" />
           {LayerList.map((layer,index) => (
-            <optgroup key={index} label={layer.name}>
+            <optgroup key={layer.name} label={layer.name}>
             {layer.years.map((year,index) => (
-                <option key={index} value={`${layer.id} ${year}`}>{year}</option>
+                <option key={`${layer.prefix}${year}`} value={`${layer.prefix}${year}`}>{year}</option>
             ))}
             </optgroup>
           ))}
