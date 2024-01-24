@@ -148,7 +148,7 @@ export default function NavBar({ onChildStateChange, onLayerChange }) {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <Toolbar>
           <IconButton
             size="large"
@@ -167,9 +167,9 @@ export default function NavBar({ onChildStateChange, onLayerChange }) {
           >
             SmoKE
           </Typography>
-          <Search>
+          {/* <Search>
             <Dropdown onChildStateChange={handleCommunityChange} ></Dropdown>
-          </Search>
+          </Search> */}
             <LayerDropdown onChildLayerChange={handleLayerChange}/>
           <Box sx={{ flexGrow: 1 }} />
           {pages.map((page) => (

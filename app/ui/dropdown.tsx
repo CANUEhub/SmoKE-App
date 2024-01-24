@@ -15,7 +15,7 @@ export default function Dropdown({ onChildStateChange }) {
 
       const handleCommunityChange = (newValue) => {
 
-        if(!newValue){
+        if(newValue === null){
           return;
         }
         
@@ -30,15 +30,13 @@ export default function Dropdown({ onChildStateChange }) {
       disablePortal
       id="combo-box-demo"
       options={communities}
-      sx={{ width: 400 }}
+      sx={{ width: 400, position: 'absolute', left: '5vh', top: '10vh', background: 'white' }}
       getOptionKey={(option) => option.id}
       renderInput={(params) => {
         return <TextField {...params}
         label=""
-        placeholder="Search City"
-        InputProps={{ ...params.InputProps,
-          startAdornment: ( <InputAdornment position="start"> <SearchIcon color="black" />
-          </InputAdornment> )}} />
+        placeholder="Search..."
+        InputProps={{ ...params.InputProps}} />
       }}
       onChange={(event: any, newValue) => {
         handleCommunityChange(newValue);
