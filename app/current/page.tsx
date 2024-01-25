@@ -8,6 +8,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import "mapbox-gl/dist/mapbox-gl.css";
 import NavBar from "../ui/navbar";
 import Player from "../ui/current/player";
+import Forecast from "../ui/current/forecast";
 import { useRouter } from 'next/navigation'
 import { format, startOfHour, formatISO, addHours } from "date-fns";
 import Button from '@mui/material/Button';
@@ -28,7 +29,7 @@ import Image from 'next/image'
 
 import settlements from "../../public/data/settlements.json";
 import classes from "../page.module.css";
-import { table } from "console";
+import { log, table } from "console";
 
 export default function Page() {
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -153,10 +154,14 @@ export default function Page() {
   }
 
   const handlePopupClose = () => {
-  setPopupLoading(false);
-  setShowPopup(false);
-
+    setPopupLoading(false);
+    setShowPopup(false);
   }
+
+  const handlePlayback = () => {
+    setIsRunning(!isRunning);
+  }
+
   const generateTimestamps = () => {
     const currentTimestamp = new Date();
     const timestamps = [];
@@ -192,8 +197,9 @@ export default function Page() {
       ],
       "tileSize": 256
     })
-    if (seconds === totalSeconds) {
-      setSeconds(0)
+    if (seconds === totalSeconds - 2) {
+      console.log('hit', seconds)
+      setSeconds(0);
     } else {
       setSeconds(seconds + 1);
     }
@@ -212,13 +218,42 @@ export default function Page() {
     zoomToSelectedLoc(evt, sett, value);
   }
 
+
+  const handleStepTimeChange = (time) => {
+
+    console.log("handle time change", time);
+    setSeconds(time);
+    setIsRunning(false);
+    setLayer({
+      "type": "raster",
+      "tiles": [ 
+        `https://geo.weather.gc.ca/geomet?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=RAQDPS-FW.SFC_PM2.5&TIME=${timestampsArray[seconds]}`
+      ],
+      "tileSize": 256
+    })
+
+  }
+  const handleTimeChange = (evt) => {
+
+      console.log("handle time change", evt.target.value);
+      setSeconds(evt.target.value);
+      setIsRunning(false);
+      setLayer({
+        "type": "raster",
+        "tiles": [ 
+          `https://geo.weather.gc.ca/geomet?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.1.1&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&layers=RAQDPS-FW.SFC_PM2.5&TIME=${timestampsArray[seconds]}`
+        ],
+        "tileSize": 256
+      })
+  }
+
   const zoomToSelectedLoc = (e, sett, index) => {
     // stop event bubble-up which triggers unnecessary events
     e.stopPropagation();
     setCommunity(index.toString());
     setCommunityName(sett.properties.community_name);
-    console.log("Sett", sett.properties.community_name);
-    mapRef.current.flyTo({ center: [sett.geometry.coordinates[0], sett.geometry.coordinates[1]], zoom: 10 });
+    mapRef.current.flyTo({ center: [sett.geometry.coordinates[0], sett.geometry.coordinates[1]], zoom: 12 });
+
     //router.push("/dashboard");
 
 
@@ -324,32 +359,25 @@ export default function Page() {
           </Source>
           {mapLoaded && (
 
-              <Player/>
+              <Player 
+                onPlaybackChange={handlePlayback}
+                onTimeChange={handleTimeChange}
+                onStepChange={handleStepTimeChange}
+                isPlaying={isRunning}
+                totalSeconds={totalSeconds} 
+                currentSeconds={seconds}
+                timeStamps={timestampsArray}
+              />
+
+              
 
           )}
-        {/* <div style="">
-        <Player></Player>
-          <IconButton style={{ background: "black" }} aria-label="Play" onClick={() => setIsRunning(!isRunning)}>
-            {isRunning ? (
-              <PauseIcon fontSize="large" style={{ color: "white" }} />
-            ) : (
-              <PlayArrowSharp fontSize="large" style={{ color: "white" }} />
-            )
-            }
-          </IconButton>
-          <Slider
-            value={seconds}
-            aria-label="Temperature"
-            defaultValue={0}
-            valueLabelDisplay="auto"
-            step={1}
-            marks
-            min={0}
-            max={totalSeconds}
-            onChange={handleTimeChange}
-          />
-        </div> */}
-        
+
+{showPopup && (
+          <Forecast forcastObject={aqhiData}/>
+)}
+<Forecast forcastObject={aqhiData}/>
+
       </Map>
       </ThemeClient>
     </main>
