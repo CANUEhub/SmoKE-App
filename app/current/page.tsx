@@ -36,6 +36,17 @@ export default function Page() {
   const [popupLoading, setPopupLoading] = useState<boolean>(false);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const totalSeconds = 62;
+  const router = useRouter();
+
+
+  useEffect(() => {
+    // Check if the user is authenticated
+    const isAuthenticated = localStorage.getItem('authenticated');
+    if (!isAuthenticated) {
+      // Redirect to the login page if not authenticated
+      router.push('/auth');
+    }
+  }, []);
   // layers 
 
   // historical raste layer

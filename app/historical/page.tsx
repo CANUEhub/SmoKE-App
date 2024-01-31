@@ -1,13 +1,13 @@
 "use client";
 
 import Map, { Source, Layer, NavigationControl } from "react-map-gl";
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import "mapbox-gl/dist/mapbox-gl.css";
 import NavBar from "../ui/navbar";
 import Sidebar from "../ui/historical/sidebar";
 import LayerButtons from "../ui/historical/layerButtons";
 import BottomChartBar from "../ui/historical/bottomChartBar";
-
+import { useRouter } from 'next/navigation'
 import { format, startOfHour, formatISO, addHours } from "date-fns";
 import Button from '@mui/material/Button';
 import useInterval from '../hooks/useInterval'
@@ -42,11 +42,20 @@ export default function Page() {
   const [isRunning, setIsRunning] = useState(true);
   const [popupLon, setPopupLon] = useState(null);
   const [popupLat, setPopupLat] = useState(null);
-  const [aqhiData, setAqhiData] = useState(null);
   const [popupLoading, setPopupLoading] = useState<boolean>(false);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const totalSeconds = 62;
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if the user is authenticated
+    const isAuthenticated = localStorage.getItem('authenticated');
+    if (!isAuthenticated) {
+      // Redirect to the login page if not authenticated
+      router.push('/auth');
+    }
+  }, []);
   // layers 
 
   const settlementSource = {
@@ -94,17 +103,13 @@ export default function Page() {
     }
 
   }
-
-  
-  const wmsLayer = {
-    id: 'radar-layer',
-    'type': 'raster',
-    'source': 'radar',
-    'paint': {
-      'raster-fade-duration': 0,
-      "raster-opacity": 0.5
-    }
-  };
+const LAYER_TYPES = {
+    pm25:'pm25',
+    aqhi:'aqhi',
+    temp:'temp',
+    precip:'precip',
+    burn:'burn'
+}
 
 
   const onMapClick = (evt: mapboxgl.MapLayerMouseEvent) => {
@@ -139,7 +144,7 @@ export default function Page() {
       console.log('featureLayer:', featureLayer);
       if(year){
 
-          loadSplineData(featureLayer.id,year)
+          loadSplineData(layerType, featureLayer.id, year)
       }
     } else {
       return;
@@ -151,20 +156,37 @@ export default function Page() {
     //setShowPopup(false);
   }
 
-  const loadSplineData = (id, yr) => {
+  const loadSplineData = (layerType, id, yr) => {
+    console.log('loadSplineData layerType', layerType)
     console.log('loadSplineData id: ',id)
     console.log('loadSplineData year: ',yr)
-    axios.get('/pm25daily', {
-        params: { sett_id: id, year: yr  }
-      })
-        .then((response) => {
-          console.log("response", response.data.message)
-          setSplineData(response.data.message);
-          console.log("aqhi", aqhiData);
-        }).finally(() => {
-          setChartLoading(false);
-        })
-        .catch((e) => { console.log(e) });
+
+    if (layerType === LAYER_TYPES.pm25){
+        axios.get('/pm25daily', {
+            params: { sett_id: id, year: yr  }
+          })
+            .then((response) => {
+              setSplineData(response.data.message);
+              console.log("pm25 data", response.data.message);
+            }).finally(() => {
+              setChartLoading(false);
+            })
+            .catch((e) => { console.log(e) });
+    } else if (layerType === LAYER_TYPES.aqhi){
+        axios.get('/aqhidaily', {
+            params: { sett_id: id, year: yr  }
+          })
+            .then((response) => {
+              setSplineData(response.data.message);
+              console.log("aqhi", response.data.message);
+            }).finally(() => {
+              setChartLoading(false);
+            })
+            .catch((e) => { console.log(e) });
+    } else {
+        return;
+    }
+
   }
 
 
@@ -183,16 +205,16 @@ export default function Page() {
     const layerName = `${historicalLayer.prefix}${year.value}`
     setYear(year.value)
     setmapboxStyle(year.mapboxUrl)
-    handleMapLayerChange(layerName, year.value);
+    handleMapLayerChange(layerName, year.value, layerType);
     if(community){
         setBottomBarOpen(true);
     }
 
   }
 
-  const handleMapLayerChange = (value, year) => {
+  const handleMapLayerChange = (value, year, layerType) => {
     const currentlayers = mapRef.current.getStyle().layers
-    loadSplineData(community, year);
+    loadSplineData(layerType, community, year);
 
     if (layer) {
         mapRef.current.getMap().setLayoutProperty(layer, 'visibility', 'none');
@@ -230,7 +252,7 @@ export default function Page() {
     const evt = new Event("click");
     if(layerType && year) {
         console.log('called')
-        loadSplineData(value, year);
+        loadSplineData(layerType, value, year);
     }
     zoomToSelectedLoc(evt, sett, value);
   }

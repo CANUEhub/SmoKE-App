@@ -7,7 +7,10 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import ForecastCard from './forecastCard';
+import { ResponsiveChartContainer } from '@mui/x-charts/ResponsiveChartContainer';
 import { LineChart } from '@mui/x-charts/LineChart';
+import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis';
+import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const LAYER_TYPES = {
@@ -33,21 +36,27 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
         scaleType: 'time'
       } 
 
+    const seriesConfig = {
+        type:'line',
+        data: dataArray,
+        showMark: false
+    }
+
     return (
         <Card sx={{ position: 'absolute', left:400, bottom:0 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', width:1000, height:300 }}>
                 {isLoading ? (<CircularProgress color="success" />) : (
-                        <LineChart
+                         <LineChart
                         xAxis={[{ ...xAxisCommon }]}
                         series={[
-                          {
-                            data: dataArray,
-                            showMark: false
-                          },
+                            {
+                                data: dataArray,
+                                showMark: false
+                            },
                         ]}
                         width={1000}
                         height={300}
-                      />
+                        /> 
                 )}
             </Box>
 

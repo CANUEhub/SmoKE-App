@@ -13,6 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import ForecastCard from './forecastCard';
 import CircularProgress from '@mui/material/CircularProgress';
+import { BarChart } from '@mui/x-charts/BarChart';
 import LayerTypes from '../../../public/data/raster_data.json'
 import Dropdown from '../dropdown';
 
@@ -72,7 +73,7 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
                             id="demo-simple-select"
                             value={year}
                             label="Year"
-                            sx={{ width: 400 }}
+                            sx={{ width: drawerWidth }}
                             onChange={handleYearChange}
                             disabled={true}
                         >
@@ -83,6 +84,19 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
                 <Typography sx={{ fontSize: 13 }} variant="h2">
                     {communityName}
                 </Typography>
+            </Box>
+            <Box>
+                {isLoading ? (
+                    <CircularProgress/>    
+                ):(
+                    <BarChart
+                    xAxis={[{ scaleType: 'band', data: ['Community', 'National', 'Provincial'] }]}
+                    series={[{ data: [4, 3, 5] }, { data: [1, 6, 3] }]}
+                    width={drawerWidth*0.9}
+                    height={drawerWidth*0.75}
+                  />
+                )}
+
             </Box>
         </Drawer>
     );
