@@ -3,7 +3,6 @@ import conn from '../lib/db'
 
 // To handle a GET request to /api
 export async function GET(request) {
-  console.log("request", request);
   const id = request.nextUrl.searchParams.get("sett_id");
   const year = request.nextUrl.searchParams.get("year");
   //SELECT year,day,co_pm25_avg FROM smoke.hist_comm_day WHERE commid IN (${id}) AND YEAR IN (${year}) 

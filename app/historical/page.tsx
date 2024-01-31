@@ -191,7 +191,6 @@ const LAYER_TYPES = {
 
 
   const handleLayerChange = (layerType) => {
-    console.log('layer Type change',layerType);
     setLayerType(layerType)
     const newLayer = LayerTypes.find((layer)=> layer.id === layerType);
     setHistoricalLayer(newLayer);
@@ -201,7 +200,6 @@ const LAYER_TYPES = {
   }
 
   const handleLayerYearChange = (year) => {
-    console.log('year change', year.value);
     const layerName = `${historicalLayer.prefix}${year.value}`
     setYear(year.value)
     setmapboxStyle(year.mapboxUrl)
