@@ -12,9 +12,9 @@ export default function Dropdown({ onChildStateChange, onMap=true, currentCommun
 
     const communities = community_names;
 
-    const onMapStyles = { width: 400, position: 'absolute', left: '5vh', top: '10vh', background: 'white', zIndex:2 };
+    const onMapStyles = { width: 350, position: 'absolute', left: '5vh', top: '10vh', background: 'white', zIndex:2 };
 
-    const offMapStyles = { width: 400 };
+    const offMapStyles = { width: 350, paddingBottom:10, margin:"0 auto" };
 
 
       const handleCommunityChange = (newValue) => {

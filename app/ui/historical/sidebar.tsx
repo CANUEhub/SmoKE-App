@@ -45,12 +45,12 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
             }}
             open={isOpen}
         >
-            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", marginTop: 30 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", marginTop: 20 }}>
                 <Dropdown onChildStateChange={dropdown} onMap={false} />
                 {yearArray ? (
 
-                    <FormControl>
-                        <InputLabel id="demo-simple-select-label">Year</InputLabel>
+                    <FormControl sx={{width:350, margin:'0 auto'}}>
+                        <InputLabel  id="demo-simple-select-label">Year</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
@@ -81,7 +81,7 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
                     </FormControl>
 
                 )}
-                <Typography sx={{ fontSize: 13 }} variant="h2">
+                <Typography sx={{ fontSize: 18, margin:'0 auto', padding:2 }} variant="h2">
                     {communityName}
                 </Typography>
             </Box>

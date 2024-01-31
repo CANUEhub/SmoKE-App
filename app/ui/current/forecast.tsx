@@ -21,7 +21,7 @@ export default function Forecast({ forcastObject, settlementName, isLoading, han
 
 
     return (
-        <Card sx={{ position: 'absolute', left: '1vw', bottom: '5vh', padding: '1rem' }}>
+        <Card sx={{ position: 'absolute', left: '1vw', bottom:10, padding: '1rem' }}>
                     <IconButton sx={{position:'relative', float:'right'}} aria-label="Close forecast" onClick={() => handleClose()}>
                         <CloseIcon fontSize='large' />
                     </IconButton>
