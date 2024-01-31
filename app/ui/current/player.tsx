@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
+import { styled } from '@mui/system';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -18,7 +19,8 @@ const date_options = {
   day: "numeric",
   hour: "numeric",
   minute: "numeric",
-  second: "numeric"
+  second: "numeric",
+  hour12: false
 };
 
 
@@ -47,6 +49,14 @@ export default function Player({onPlaybackChange, onTimeChange, onStepChange, is
     },
   ];
 
+  const CustomSlider = styled(Slider)(({ theme }) => ({
+    "& .MuiSlider-markLabel": {
+      whiteSpace: 'unset', 
+      width: '5rem',
+      textAlign: 'center'
+    }
+  }));
+
   return (
     <Card sx={{ position:'absolute',left: '25vw', right: '25vw', marginLeft: 'auto', marginRight:'auto', bottom: '0vh' }}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -63,8 +73,8 @@ export default function Player({onPlaybackChange, onTimeChange, onStepChange, is
           }
         </CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Slider
-            sx={{width: '40vw'}}
+        <CustomSlider
+            sx={{width: '42vw'}}
             value={currentSeconds}
             color='info'
             aria-label="Timescale"

@@ -1,30 +1,28 @@
 [
     {
-        "id": 1,
+        "id": "aqhi",
         "name": "GEM-MACH AQHI Annual Averages",
-        "prefix":"AQHI_",
-        "mapBoxUrl":"mapbox://styles/canue/clqwmwemm00oe01nvflki6c3q",
-        "years": [2015, 2016, 2017, 2018, 2019, 2020, 2021]
+        "prefix":"canue-aqhi-",
+        "mapboxUrl":"mapbox://styles/canue/clrz88rvv019x01qo1g02aycu",
+        "years": [
+            { "value": 2015, "mapboxUrl":"mapbox://styles/canue/clrz88rvv019x01qo1g02aycu"},
+            { "value": 2016, "mapboxUrl":"mapbox://styles/canue/clrz88rvv019x01qo1g02aycu"},
+            { "value": 2018, "mapboxUrl":"mapbox://styles/canue/clrz88rvv019x01qo1g02aycu"},
+            { "value": 2019, "mapboxUrl":"mapbox://styles/canue/clrz88rvv019x01qo1g02aycu"},
+            { "value": 2020, "mapboxUrl":"mapbox://styles/canue/clrz88rvv019x01qo1g02aycu"},
+            { "value": 2021, "mapboxUrl":"mapbox://styles/canue/clrz88rvv019x01qo1g02aycu"}
+        ]
     },
     {
-        "id": 2,
+        "id": "pm25",
         "name": "CanOSSEM Annual PM2.5 Averages",
-        "prefix":"CANOSSEM_ANNUAL_PM25_",
-        "mapBoxUrl":"",
-        "years": [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]
-    },
-    {
-        "id": 3,
-        "name": "CanOSSEM Seasonal PM2.5 Averages",
-        "prefix":"CANOSSEM_SEASONAL_PM25_",
-        "mapBoxUrl":"",
-        "years": [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022]
-    },
-    {
-        "id": 4,
-        "name": "PM2.5 Annual Averages",
-        "prefix":"ANNUAL_PM25_",
-        "mapBoxUrl":"",
-        "years": [1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021]
+        "prefix":"canue-coa-",
+        "mapboxUrl":"mapbox://styles/canue/clrzlq3xn01en01p17gasf9ft",
+        "years": [
+            { "value": 2019, "mapboxUrl":"mapbox://styles/canue/clrzlq3xn01en01p17gasf9ft"},
+            { "value": 2020, "mapboxUrl":"mapbox://styles/canue/clrzlq3xn01en01p17gasf9ft"},
+            { "value": 2021, "mapboxUrl":"mapbox://styles/canue/clrzlq3xn01en01p17gasf9ft"},
+            { "value": 2022, "mapboxUrl":"mapbox://styles/canue/clrzlq3xn01en01p17gasf9ft"}
+        ]
     }
 ]

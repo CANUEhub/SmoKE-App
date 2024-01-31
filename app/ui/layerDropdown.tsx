@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ListSubheader from '@mui/material/ListSubheader';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import LayerTypes from '../../public/data/raster_data.json'
+import LayerTypes from '../../public/data/raster_data2.json'
 
 
 export default function LayerDropdown({ onChildLayerChange }) {

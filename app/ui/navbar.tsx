@@ -39,7 +39,7 @@ const Search = styled('div')(({ theme }) => ({
 
 
 
-export default function NavBar({ onChildStateChange, onLayerChange }) {
+export default function NavBar({ }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -67,20 +67,6 @@ export default function NavBar({ onChildStateChange, onLayerChange }) {
     setMobileMoreAnchorEl(null);
   };
 
-  const handleCommunityChange = (community) => {
-    const newValue = community;
-    setCommunity(newValue);
-
-    // Invoke the callback provided by the parent
-    onChildStateChange(newValue);
-  }
-
-  const handleLayerChange = (newlayer) => {
-    console.log('navbar', newlayer);
-    const newValue = newlayer;
-    setLayer(newValue);
-    onLayerChange(newlayer);
-  }
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -158,10 +144,6 @@ export default function NavBar({ onChildStateChange, onLayerChange }) {
           >
             SmoKE
           </Typography>
-          {/* <Search>
-            <Dropdown onChildStateChange={handleCommunityChange} ></Dropdown>
-          </Search> */}
-            <LayerDropdown onChildLayerChange={handleLayerChange}/>
           <Box sx={{ flexGrow: 1 }} />
           {pages.map((page) => (
                 <MenuItem key={page} onClick={handleProfileMenuOpen}>

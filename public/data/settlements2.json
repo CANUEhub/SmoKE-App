@@ -3,6 +3,36 @@
     "features": [
         {
             "type": "Feature",
+            "id": 0,
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -82.59740000000002,
+                    42.05280000000002
+                ]
+            },
+            "properties": {
+                "FID": 0,
+                "FID_SMOKE_": 289,
+                "OBJECTID": 290,
+                "ID": 290,
+                "lon": -82.5974,
+                "lat": 42.0528,
+                "FID_TIME_Z": 8,
+                "FID_": 0,
+                "ZONE_": -5,
+                "SQMI": 7250691.3,
+                "SQKM": 18779204.25,
+                "Colormap": 3,
+                "Shape_Leng": 555.921077238,
+                "Shape__Are": 2556.67916827,
+                "Shape__Len": 555.921077236,
+                "name": "ET",
+                "community_name": "Caldwell"
+            }
+        },
+        {
+            "type": "Feature",
             "id": 1,
             "geometry": {
                 "type": "Point",

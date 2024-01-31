@@ -7,10 +7,14 @@ import Autocomplete from '@mui/material/Autocomplete';
 import community_names from "../../public/data/community_names.json";
 
 
-export default function Dropdown({ onChildStateChange }) {
+export default function Dropdown({ onChildStateChange, onMap=true}) {
     const [community, setCommunity] = useState('');
 
     const communities = community_names;
+
+    const onMapStyles = { width: 400, position: 'absolute', left: '5vh', top: '10vh', background: 'white', zIndex:2 };
+
+    const offMapStyles = { width: 400 };
 
 
       const handleCommunityChange = (newValue) => {
@@ -30,7 +34,7 @@ export default function Dropdown({ onChildStateChange }) {
       disablePortal
       id="combo-box-demo"
       options={communities}
-      sx={{ width: 400, position: 'absolute', left: '5vh', top: '10vh', background: 'white' }}
+      sx={ onMap ? (onMapStyles):(offMapStyles)}
       getOptionKey={(option) => option.id}
       renderInput={(params) => {
         return <TextField {...params}
@@ -41,7 +45,6 @@ export default function Dropdown({ onChildStateChange }) {
       onChange={(event: any, newValue) => {
         handleCommunityChange(newValue);
       }}
-      
     />
   );
 }

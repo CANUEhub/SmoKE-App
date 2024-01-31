@@ -186,7 +186,7 @@ export default function Home() {
   return (
     <main className={classes.mainStyle}>
       <ThemeClient>
-        <NavBar onChildStateChange={handleCommunityChange} onLayerChange={handleLayerChange} ></NavBar>
+        <NavBar></NavBar>
 
         <Map
           ref={mapRef}
