@@ -51,12 +51,6 @@ export default function Page() {
 
   // historical raste layer
 
-  const customLayer: RasterLayer = {
-    id: 'AQHI_2021_avg',
-    type: 'raster',
-    source: 'mapbox',
-  };
-
   const settlementSource = {
     id: "settlementSource",
     type: 'geojson',
