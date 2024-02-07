@@ -324,7 +324,7 @@ const LAYER_TYPES = {
             <Layer {...settlementClusterNumber} />
             <Layer {...unclusteredSettlementPointLayer} />
           </Source>
-          <NavigationControl position='bottom-right' />
+          <NavigationControl position='top-right' />
 
         </Map>
       </ThemeClient>

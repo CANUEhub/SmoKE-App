@@ -41,7 +41,7 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
             variant="persistent"
             sx={{
                 flexShrink: 0,
-                [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box', zIndex: 1 },
+                [`& .MuiDrawer-paper`]: { width: '20%', boxSizing: 'border-box', zIndex: 1 },
             }}
             open={isOpen}
         >
@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
                 <Dropdown onChildStateChange={dropdown} onMap={false} />
                 {yearArray ? (
 
-                    <FormControl sx={{width:350, margin:'0 auto'}}>
+                    <FormControl sx={{maxWidth:350, margin:'0 1rem'}}>
                         <InputLabel  id="demo-simple-select-label">Year</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"

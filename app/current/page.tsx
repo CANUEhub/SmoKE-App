@@ -7,7 +7,7 @@ import NavBar from "../ui/navbar";
 import Player from "../ui/current/player";
 import Forecast from "../ui/current/forecast";
 import { useRouter } from 'next/navigation'
-import { format, startOfHour, formatISO, addHours } from "date-fns";
+import { format, startOfHour, startOfDay, formatISO, addHours, isAfter, setHours, getHours } from "date-fns";
 import Button from '@mui/material/Button';
 import useInterval from '../hooks/useInterval'
 import Dropdown from '../ui/dropdown';
@@ -23,20 +23,22 @@ import { log, table } from "console";
 export default function Page() {
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const features = settlements.features;
+  const router = useRouter();
   const [community, setCommunity] = useState('');
   const [communityName, setCommunityName] = useState('');
   const [layer, setLayer] = useState(null);
   const mapRef = useRef(null);
   const [seconds, setSeconds] = useState(0);
-  const [isRunning, setIsRunning] = useState(true);
+  const [isRunning, setIsRunning] = useState(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [popupLon, setPopupLon] = useState(null);
   const [popupLat, setPopupLat] = useState(null);
   const [aqhiData, setAqhiData] = useState(null);
   const [popupLoading, setPopupLoading] = useState<boolean>(false);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
-  const totalSeconds = 62;
-  const router = useRouter();
+  const [startSecondIndex, setStartSecondIndex] = useState(null);
+  
+  const totalSeconds = 71;
 
 
   useEffect(() => {
@@ -54,10 +56,7 @@ export default function Page() {
   const settlementSource = {
     id: "settlementSource",
     type: 'geojson',
-    data: settlements,
-    cluster: true,
-    clusterMaxZoom: 14,
-    clusterRadius: 50
+    data: settlements
   };
 
   const clusteredSettlementLayer = {
@@ -87,7 +86,6 @@ export default function Page() {
     id: 'unclustered-point',
     type: 'circle',
     source: 'settlementSource',
-    filter: ['!', ['has', 'point_count']],
     paint: {
       'circle-color': '#0ca296',
       'circle-radius': 4,
@@ -156,19 +154,46 @@ export default function Page() {
     setIsRunning(!isRunning);
   }
 
+  const isAfter12UTC = (currentTimestamp) => {
+    // Convert the current timestamp to a Date object
+    const currentDate = new Date(currentTimestamp);
+  
+    // Set the hours to 12:00 UTC
+    const twelveUTC = setHours(currentDate, 12);
+
+    // Check if the current timestamp is after 12:00 UTC
+    return isAfter(currentDate, twelveUTC);
+  }
+
   const generateTimestamps = () => {
     const currentTimestamp = new Date(); // get as utc 
     const timestamps = [];
+    const result = getHours(currentTimestamp)
+    if(isAfter12UTC(currentTimestamp)){
+     
+      if(seconds === 0){
+        setSeconds(result-12);
+      }
 
-    // Generate timestamps for the next 72 hours (every hour)
-    // 
-    for (let i = 0; i < totalSeconds; i++) {
-      const timestamp = startOfHour(addHours(currentTimestamp, i));
-      const formattedTimestamp = timestamp.toISOString().slice(0, -5) + 'Z';
-      timestamps.push(formattedTimestamp);
+      for (let i = 0; i < totalSeconds; i++) {
+        const timestamp = startOfHour(addHours(setHours(currentTimestamp, 12), i));
+        const formattedTimestamp = timestamp.toISOString().slice(0, -5) + 'Z';
+        timestamps.push(formattedTimestamp);
+      }
+      return timestamps;
+    } else {
+      if(seconds === 0){
+        setSeconds(result);
+      }
+
+      for (let i = 0; i < totalSeconds; i++) {
+        const timestamp = startOfHour(addHours(setHours(currentTimestamp, 0), i));
+        const formattedTimestamp = timestamp.toISOString().slice(0, -5) + 'Z';
+        timestamps.push(formattedTimestamp);
+      }
+  
+      return timestamps;
     }
-
-    return timestamps;
   };
 
   const wmsLayer = {
@@ -184,7 +209,6 @@ export default function Page() {
   const timestampsArray = generateTimestamps();
 
   useInterval(() => {
-    // Your custom logic here
     setLayer({
       "type": "raster",
       "tiles": [
@@ -192,7 +216,7 @@ export default function Page() {
       ],
       "tileSize": 256
     })
-    if (seconds === totalSeconds - 2) {
+    if (seconds === totalSeconds) {
       console.log('hit', seconds)
       setSeconds(0);
     } else {
@@ -284,8 +308,8 @@ export default function Page() {
           )}
 
           <Source {...settlementSource}>
-            <Layer {...clusteredSettlementLayer} />
-            <Layer {...settlementClusterNumber} />
+            {/* <Layer {...clusteredSettlementLayer} />
+            <Layer {...settlementClusterNumber} /> */}
             <Layer {...unclusteredSettlementPointLayer} />
           </Source>
           

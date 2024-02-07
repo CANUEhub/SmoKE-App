@@ -6,6 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import MinimizeIcon from '@mui/icons-material/Minimize';
 import ForecastCard from './forecastCard';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -21,15 +22,21 @@ export default function Forecast({ forcastObject, settlementName, isLoading, han
 
 
     return (
-        <Card sx={{ position: 'absolute', left: '1vw', bottom:10, padding: '1rem' }}>
+        <Card sx={{ position: 'absolute', left: '1vw', bottom:"3%", padding: '1rem', paddingTop:'0', backgroundColor: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(5px)', height:"70%"}}>
                     <IconButton sx={{position:'relative', float:'right'}} aria-label="Close forecast" onClick={() => handleClose()}>
-                        <CloseIcon fontSize='large' />
+                        <MinimizeIcon fontSize='large' />
                     </IconButton>
-                <CardContent sx={{ display:'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="h6">
+                <CardContent sx={{ display:'flex', justifyContent: 'space-between', paddingBottom:0 }}>
+                    <Typography variant="h5" sx={{color: "#747474", fontWeight:"800"}}>
                         3-day Forecast
                     </Typography>
 
+
+                </CardContent>
+                <CardContent sx={{paddingTop: 0, paddingBottom: 0}}>
+                <Typography sx={{color: "#747474", fontSize:12}}>
+                        Last Updated
+                    </Typography>
                 </CardContent>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {isLoading ? (<CircularProgress color="success" />) : (

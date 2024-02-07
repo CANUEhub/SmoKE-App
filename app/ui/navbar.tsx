@@ -140,9 +140,9 @@ export default function NavBar({ }) {
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
+            sx={{ display: { xs: 'none', sm: 'block' }, color: "#0CA296", fontWeight:"bold", fontSize:26 }}
           >
-            SmoKE
+            SMOKE
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           {pages.map((page) => (
