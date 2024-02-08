@@ -14,11 +14,15 @@ export default function Home() {
 
 
   useEffect(() => {
-    // Check if the user is authenticated
+    const userAgent = navigator.userAgent;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    const screenWidth = window.innerWidth;
     const isAuthenticated = localStorage.getItem('authenticated');
     if (!isAuthenticated) {
       // Redirect to the login page if not authenticated
       router.push('/auth');
+    } else if(isMobile || screenWidth < 1920) {
+      router.push('/mobile');
     }
   }, []);
 

@@ -16,10 +16,15 @@ const AuthPage: React.FC = () => {
 
   const handleLogin = () => {
     // Check the credentials (this is just a simple example)
-    if (username === process.env.NEXT_PUBLIC_USERNAME && password === process.env.NEXT_PUBLIC_PASSWORD) {
-      // Authentication successful
+
+    const userAgent = navigator.userAgent;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+
+    if (isMobile) {
+      router.push('/mobile'); // Redirect to SplashScreen if it's a mobile device and not already on SplashScreen
+    } else if (username === process.env.NEXT_PUBLIC_USERNAME && password === process.env.NEXT_PUBLIC_PASSWORD) {
       localStorage.setItem('authenticated', 'true');
-      router.push('/current'); // Redirect to the dashboard or any other page
+      router.push('/current'); 
     } else {
       alert('Invalid credentials');
     }

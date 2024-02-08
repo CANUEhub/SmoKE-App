@@ -9,19 +9,16 @@ import LayerButtons from "../ui/historical/layerButtons";
 import BottomChartBar from "../ui/historical/bottomChartBar";
 import { useRouter } from 'next/navigation'
 import { format, startOfHour, formatISO, addHours } from "date-fns";
-import Button from '@mui/material/Button';
-import useInterval from '../hooks/useInterval'
 import Dropdown from '../ui/dropdown';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import ThemeClient from "../ui/themeClient";
-import Image from 'next/image'
 
 import settlements from "../../public/data/settlements.json";
 import LayerTypes from '../../public/data/raster_data.json'
 
 import classes from "../page.module.css";
-import { log, table } from "console";
+
 
 export default function Page() {
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -50,10 +47,16 @@ export default function Page() {
 
   useEffect(() => {
     // Check if the user is authenticated
+    const userAgent = navigator.userAgent;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    const screenWidth = window.innerWidth;
+
     const isAuthenticated = localStorage.getItem('authenticated');
     if (!isAuthenticated) {
       // Redirect to the login page if not authenticated
       router.push('/auth');
+    } else if(isMobile || screenWidth < 1920) {
+      router.push('/mobile');
     }
   }, []);
   // layers 
