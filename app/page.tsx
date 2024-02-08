@@ -21,7 +21,7 @@ export default function Home() {
     if (!isAuthenticated) {
       // Redirect to the login page if not authenticated
       router.push('/auth');
-    } else if(isMobile || screenWidth < 1920) {
+    } else if(isMobile || screenWidth < 1440) {
       router.push('/mobile');
     }
   }, []);

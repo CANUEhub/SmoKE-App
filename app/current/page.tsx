@@ -46,12 +46,13 @@ export default function Page() {
     const userAgent = navigator.userAgent;
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
     const screenWidth = window.innerWidth;
+    console.log("screenWidth", screenWidth)
 
     const isAuthenticated = localStorage.getItem('authenticated');
     if (!isAuthenticated) {
       // Redirect to the login page if not authenticated
       router.push('/auth');
-    } else if(isMobile || screenWidth < 1920) {
+    } else if(isMobile || screenWidth < 1440) {
       router.push('/mobile');
     }
     
