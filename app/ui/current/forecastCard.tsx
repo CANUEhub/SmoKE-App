@@ -43,9 +43,19 @@ export default function ForecastCard({ settlementName, time, pm25, aqhi, precip,
         <Card variant="outlined" sx={{ display: 'flex', m: 1, height: "17vh", border: "none", boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.3)' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 <CardContent sx={{ paddingBottom: 0, paddingTop: "0.5rem" }}>
-                    <Typography sx={{ fontSize: 15, fontWeight: "bold" }} variant="h6">
+                <Tooltip title={settlementName} arrow placement="top">
+                    <Typography sx={{ 
+                        fontSize: 15, 
+                        fontWeight: "bold",
+                        maxWidth: '7rem',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        }} 
+                        variant="h6">
                         {settlementName}
                     </Typography>
+                    </Tooltip>
                     <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                         {time} | Daily Max.
                     </Typography>
@@ -124,7 +134,7 @@ The AQHI is measured on a scale ranging from 1-10+. The AQHI index values are gr
                 </Box>
             </Box>
             <Box sx={{ borderLeft: "1px solid #E0E0E0" }}>
-                <CardContent sx={{ display:'flex', gap:1, alignItems:'flex-end' }}>
+                <CardContent sx={{ display:'flex', gap:0.8, alignItems:'flex-end' }}>
                 <Typography>
                     <Icon color={'#E0E0E0'} path={mdiWeatherLightning} size={1.2} />
                     </Typography>
@@ -135,7 +145,7 @@ The AQHI is measured on a scale ranging from 1-10+. The AQHI index values are gr
                         mm/day
                     </Typography>
                 </CardContent>
-                <CardContent sx={{ paddingTop: 0, display:'flex', gap:1 }}>
+                <CardContent sx={{ paddingTop: 0, display:'flex', gap:0.8 }}>
                     <Typography>
                     <Icon color={'#E0E0E0'} path={mdiTemperatureCelsius} size={1.3} />
                     </Typography>
