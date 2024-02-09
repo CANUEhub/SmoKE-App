@@ -226,8 +226,14 @@ const LAYER_TYPES = {
     setHistoricalLayer(newLayer);
     setYearArray(newLayer.years)
     setmapboxStyle(newLayer.mapboxUrl)
-    setSidebarOpen(true);
     setChartLoading(true);
+    setYear('');
+    setAnnualData(null);
+    if (layerType === LAYER_TYPES.aqhi){
+      setBottomBarOpen(false);
+    } else {
+      setSidebarOpen(true);
+    }
   }
 
   const handleLayerYearChange = (year) => {
@@ -235,7 +241,7 @@ const LAYER_TYPES = {
     setYear(year.value)
     setmapboxStyle(year.mapboxUrl)
     handleMapLayerChange(layerName, year.value, layerType);
-    if(community){
+    if(community && layerType === LAYER_TYPES.pm25){
         setBottomBarOpen(true);
     }
 
@@ -243,14 +249,18 @@ const LAYER_TYPES = {
 
   const handleMapLayerChange = (value, year, layerType) => {
     const currentlayers = mapRef.current.getStyle().layers
+    if(layerType === LAYER_TYPES.aqhi){
+      setBottomBarOpen(false);
+      setSidebarOpen(false);
+    }
     loadSplineData(layerType, community, year);
+
 
     if (layer) {
         mapRef.current.getMap().setLayoutProperty(layer, 'visibility', 'none');
       }
       
       setLayer(value);
-      console.log('layer:', value);
 
     const visibility = mapRef.current.getMap().getLayoutProperty(
         value,
@@ -292,7 +302,7 @@ const LAYER_TYPES = {
     setCommunityName(sett.properties.community_name);
     mapRef.current.flyTo({ center: [sett.geometry.coordinates[0], sett.geometry.coordinates[1]], zoom: 12 });
     setSidebarOpen(true);
-    if(year && layerType){
+    if(year && layerType === LAYER_TYPES.pm25){
         setBottomBarOpen(true);
     }
   };
@@ -320,7 +330,7 @@ const LAYER_TYPES = {
         >
           <NavBar></NavBar>
           { !sidebarOpen ? (
-              <Dropdown onChildStateChange={handleCommunityChange}></Dropdown>
+              <Dropdown onChildStateChange={handleCommunityChange} communityName={communityName}></Dropdown>
 
           ):(
               <Sidebar 
@@ -333,6 +343,7 @@ const LAYER_TYPES = {
                 yearValue={year}
                 barData={annualData}
                 isLoading={chartLoading}
+                communityName={communityName}
                 />
                 
                 )}

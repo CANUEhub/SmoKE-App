@@ -26,7 +26,7 @@ const LAYER_TYPES_HEADING = {
     burn: 'ANNUAL PM 2.5 COMPARISON,'
 }
 
-export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dropdown, communityName, isLoading, yearValue = "", barData }) {
+export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dropdown, communityName, isLoading, yearValue, barData }) {
     const theme = useTheme();
     const [year, setYear] = React.useState('');
     const handleYearChange = (evt) => {
@@ -56,7 +56,7 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
                     color: 'black',
                     fontWeight: 300
                 }}>Search Communities</InputLabel>
-                <Dropdown sx={{}} onChildStateChange={dropdown} onMap={false} />
+                <Dropdown sx={{}} onChildStateChange={dropdown} onMap={false} communityName={communityName} />
                 <InputLabel sx={{
                     fontSize: 15,
                     color: 'black',
@@ -69,7 +69,6 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={year}
-                            label="Year"
                             onChange={handleYearChange}
                             disabled={!layerType}
                         >
@@ -85,7 +84,7 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={year}
+                            value={yearValue}
                             label="Year"
                             sx={{ width: drawerWidth }}
                             onChange={handleYearChange}

@@ -10,7 +10,7 @@ const modifiedTheme = createTheme({
       main: '#fff',
     },
     secondary: {
-      main: '#f50057',
+      main: '#333333',
     },
   },
   components: {

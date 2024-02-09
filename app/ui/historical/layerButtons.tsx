@@ -13,6 +13,9 @@ import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import ThunderstormIcon from '@mui/icons-material/Thunderstorm';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import Icon from '@mdi/react';
+import Button from '@mui/material/Button';
+import { mdiSmoke, mdiAirFilter } from '@mdi/js';
 
 import CloseIcon from '@mui/icons-material/Close';
 import ForecastCard from './forecastCard';
@@ -28,44 +31,54 @@ const LAYER_TYPES = {
     burn:'burn'
 }
 
+const CenteredIconButton = ({ children, icon, ...props }) => {
+    return (
+      <Button
+        {...props}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          '& .MuiButton-startIcon': {
+            mb: 0, // Remove margin bottom from the icon
+          },
+        }}
+        startIcon={icon}
+      >
+        {children}
+      </Button>
+    );
+  };
+
 export default function LayerButtons({ layerChange, layerType }) {
     const theme = useTheme();
 
     return (
-        <div style={{ position:"absolute", top:"10vh", left:'50%', transform:"translateX(-50%)"  }} >
-        <ButtonGroup sx={{background:'white'}} variant="outlined" aria-label="Layer selection button group">
-
-        <IconButton 
-            aria-label="Enable Historical PM2.5 layer" 
-            onClick={() => layerChange(LAYER_TYPES.pm25)}
-            color={layerType === LAYER_TYPES.pm25 ? ('success'):('default')}>
-            <FilterDramaIcon></FilterDramaIcon>
-        </IconButton>
-        <IconButton 
-            aria-label="Enable Historical AQHI layer" 
-            onClick={() => layerChange(LAYER_TYPES.aqhi)}
-            color={layerType === LAYER_TYPES.aqhi ? ('success'):('default')}>
-            <MasksIcon></MasksIcon>
-        </IconButton>
-        <IconButton 
-            aria-label="Enable Historical Temperature layer" 
-            disabled={true} 
-            onClick={() => layerChange(LAYER_TYPES.temp)}>
-            <ThermostatIcon></ThermostatIcon>
-        </IconButton>
-        <IconButton 
-            aria-label="Enable Historical Precipitation layer" 
-            disabled={true} 
-            onClick={() => layerChange(LAYER_TYPES.precip)}>
-            <ThunderstormIcon></ThunderstormIcon>
-        </IconButton>
-        <IconButton 
-            aria-label="Enable Historical Burn composite layer" 
-            disabled={true} 
-            onClick={() => layerChange(LAYER_TYPES.burn)}>
-            <LocalFireDepartmentIcon></LocalFireDepartmentIcon>
-        </IconButton>
-            </ButtonGroup>
+        <div style={{ 
+            position:"absolute", 
+            top:"10vh", 
+            left:'50%', 
+            transform:"translateX(-50%)", 
+            display:'flex',
+            flexDirection:'row',
+            gap:10 }} >
+    <CenteredIconButton
+        size='small'
+        variant="contained" 
+        icon={<Icon path={mdiSmoke} size={1} />}
+        color={layerType === LAYER_TYPES.pm25 ? ('secondary'):('primary')}
+        onClick={() => layerChange(LAYER_TYPES.pm25)}
+    >
+      PM2.5
+    </CenteredIconButton>
+    <CenteredIconButton 
+        variant="contained" 
+        icon={<Icon path={mdiAirFilter} size={1} />}
+        color={layerType === LAYER_TYPES.aqhi ? ('secondary'):('primary')}
+        onClick={() => layerChange(LAYER_TYPES.aqhi)}
+    >
+      AQHI
+    </CenteredIconButton>
         </div>
     );
 }

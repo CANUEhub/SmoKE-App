@@ -23,6 +23,14 @@ const LAYER_TYPES = {
     burn:'burn'
 }
 
+const LAYER_TYPES_HEADING = {
+    pm25:'ANNUAL PM 2.5 COMPARISON, ',
+    aqhi:'ANNUAL AQHI COMPARISON,',
+    temp:'ANNUAL TEMPERATURE COMPARISON,',
+    precip:'ANNUAL PRECIPITATION COMPARISON,',
+    burn:'ANNUAL PM 2.5 COMPARISON,'
+}
+
 export default function BottomChartBar({ isOpen, isLoading, spline, layerType }) {
 
     const timeArray = spline.map((data)=>{
@@ -33,11 +41,15 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
 
         return Number(data[LAYER_TYPES[layerType]]);
     })
+    const yAxisCommon = {
+        label:'PM2.5 (ug/m3)'
+      } 
 
     const xAxisCommon = {
         data: timeArray,
         scaleType: 'time',
-        id: 'x-axis-id'
+        id: 'x-axis-id',
+        hideTooltip: true
       } 
 
     const seriesConfig = {
@@ -57,36 +69,34 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
 
 
             <Box>
-
-
-
-                <Paper sx={{width:'100%', height:300}}>
+                <Paper sx={{width:'100%', height:200}}>
 
                 {isLoading ? (<CircularProgress color="success" />) : (
-                    // <LineChart
-                    // xAxis={[{ ...xAxisCommon }]}
-                    // series={[
-                    //     {
-                    //         data: dataArray,
-                    //         showMark: false
-                    //     }
-                    // ]}
-
-                    // />
-                                 <ResponsiveChartContainer
-                series={[
-                {
-                type:"line",
-                data: dataArray,
-                showMark: false
-                }
-                ]}
-                xAxis={[{ ...xAxisCommon }]}
-            >
-            <LinePlot/>
-            <ChartsXAxis label="Month" position="bottom" axisId="x-axis-id" />
-            <ChartsYAxis label="PM2.5 (ug/m3)" />
-            </ResponsiveChartContainer>           
+                    <LineChart
+                    yAxis={[{...yAxisCommon}]}
+                    xAxis={[{ ...xAxisCommon }]}
+                    series={[
+                        {
+                            data: dataArray,
+                            showMark: false,
+                            
+                        }
+                    ]}
+                    />
+            //                      <ResponsiveChartContainer
+            //     series={[
+            //     {
+            //     type:"line",
+            //     data: dataArray,
+            //     showMark: false
+            //     }
+            //     ]}
+            //     xAxis={[{ ...xAxisCommon }]}
+            // >
+            // <LinePlot/>
+            // <ChartsXAxis label="Month" position="bottom" axisId="x-axis-id" />
+            // <ChartsYAxis label="PM2.5 (ug/m3)" />
+            // </ResponsiveChartContainer>           
                     )}
                 </Paper>
             </Box>

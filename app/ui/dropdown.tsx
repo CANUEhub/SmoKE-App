@@ -8,7 +8,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import community_names from "../../public/data/community_names.json";
 
 
-export default function Dropdown({ onChildStateChange, onMap=true, currentCommunity=""}) {
+export default function Dropdown({ onChildStateChange, onMap=true, communityName}) {
     const [community, setCommunity] = useState('');
 
     const communities = community_names;
@@ -49,10 +49,11 @@ export default function Dropdown({ onChildStateChange, onMap=true, currentCommun
         options={communities}
         sx={ onMap ? (onMapStyles):(offMapStyles)}
         getOptionKey={(option) => option.id}
+
         renderInput={(params) => {
           console.log('params', params);
           return <TextField {...params}
-          placeholder="Select..."
+          placeholder={ communityName ? (communityName):("Select...")}
           InputProps={{ ...params.InputProps}} />
         }}
         onChange={(event: any, newValue) => {

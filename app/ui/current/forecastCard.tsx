@@ -14,6 +14,9 @@ import Slider from "@mui/material/Slider";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { intlFormat } from "date-fns";
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import Icon from '@mdi/react';
+import { mdiTemperatureCelsius } from '@mdi/js';
+import { mdiWeatherLightning } from '@mdi/js';
 
 
 export default function ForecastCard({ settlementName, time, pm25, aqhi, precip, temp }) {
@@ -121,7 +124,10 @@ The AQHI is measured on a scale ranging from 1-10+. The AQHI index values are gr
                 </Box>
             </Box>
             <Box sx={{ borderLeft: "1px solid #E0E0E0" }}>
-                <CardContent >
+                <CardContent sx={{ display:'flex', gap:1, alignItems:'flex-end' }}>
+                <Typography>
+                    <Icon color={'#E0E0E0'} path={mdiWeatherLightning} size={1.2} />
+                    </Typography>
                     <Typography sx={{ fontSize: VALUE_FONT_SIZE, fontWeight: 800, lineHeight: 1 }}>
                         {precip}
                     </Typography>
@@ -129,7 +135,10 @@ The AQHI is measured on a scale ranging from 1-10+. The AQHI index values are gr
                         mm/day
                     </Typography>
                 </CardContent>
-                <CardContent sx={{ paddingTop: 0 }}>
+                <CardContent sx={{ paddingTop: 0, display:'flex', gap:1 }}>
+                    <Typography>
+                    <Icon color={'#E0E0E0'} path={mdiTemperatureCelsius} size={1.3} />
+                    </Typography>
                     <Typography sx={{ fontSize: VALUE_FONT_SIZE, fontWeight: 800, lineHeight: 1 }}>
                         {temp}°
                     </Typography>
