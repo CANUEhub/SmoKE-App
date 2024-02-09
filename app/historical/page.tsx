@@ -343,7 +343,6 @@ const LAYER_TYPES = {
                 yearValue={year}
                 barData={annualData}
                 isLoading={chartLoading}
-                communityName={communityName}
                 />
                 
                 )}
