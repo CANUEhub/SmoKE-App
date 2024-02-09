@@ -29,7 +29,7 @@ export default function Page() {
   const [layer, setLayer] = useState(null);
   const mapRef = useRef(null);
   const [seconds, setSeconds] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
+  const [isRunning, setIsRunning] = useState(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [popupLon, setPopupLon] = useState(null);
   const [popupLat, setPopupLat] = useState(null);

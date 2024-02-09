@@ -15,7 +15,7 @@ export default function Dropdown({ onChildStateChange, onMap=true, currentCommun
 
     const onMapStyles = { width: 350, position: 'absolute', left: '1vw', top: '7rem', background: 'white', zIndex:2 };
 
-    const offMapStyles = { maxWidth: 350 , paddingBottom:10, margin:"0 1rem" };
+    const offMapStyles = { maxWidth: 350 , paddingBottom:5 };
 
 
       const handleCommunityChange = (newValue) => {
@@ -50,8 +50,8 @@ export default function Dropdown({ onChildStateChange, onMap=true, currentCommun
         sx={ onMap ? (onMapStyles):(offMapStyles)}
         getOptionKey={(option) => option.id}
         renderInput={(params) => {
+          console.log('params', params);
           return <TextField {...params}
-          label={ onMap ? (""):("Settlement")}
           placeholder="Select..."
           InputProps={{ ...params.InputProps}} />
         }}

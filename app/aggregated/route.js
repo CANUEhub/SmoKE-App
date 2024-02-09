@@ -3,12 +3,21 @@ import conn from '../lib/db'
 
 // To handle a GET request to /api
 export async function GET(request) {
-  console.log("request", request);
   const id = request.nextUrl.searchParams.get("sett_id");
   const year = request.nextUrl.searchParams.get("year");
   //SELECT year,day,co_pm25_avg FROM smoke.hist_comm_day WHERE commid IN (${id}) AND YEAR IN (${year}) 
   try {
-    const res = await conn.query(`SELECT year,day,co_pm25_avg FROM smoke.hist_comm_day WHERE commid IN (${id}) AND YEAR IN (${year})`);
+    const res = await conn.query(`SELECT * FROM smoke.smoke_hist_all
+WHERE commid IN (${id})
+AND hcayear IN (${year})
+AND hclvar = 'co_pm25_avg'
+AND haayear IN (${year})
+AND haavar = 'COPM25'
+AND haacanyear IN (${year})
+AND halcanvar = 'co_pm25_avg'
+AND haacanvar = 'COPM25'`);
+    // const res = await conn.query(`SELECT year,day,aqhi_avg FROM smoke.hist_comm_day WHERE commid IN (${id}) AND YEAR IN (${year})`);
+    console.log('aggregated', res);
     return NextResponse.json({ message: res.rows }, { status: 200 }); 
   } catch (error) {
     console.error(error);

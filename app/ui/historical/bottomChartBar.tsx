@@ -53,10 +53,13 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
     })
     
     return (
-        <Card sx={{ position: 'absolute', width:'70%', left:'20%', bottom:0}}>
+        <Card sx={{ position: 'absolute', width:'70%', left:'30%', bottom:0}}>
 
 
             <Box>
+
+
+
                 <Paper sx={{width:'100%', height:300}}>
 
                 {isLoading ? (<CircularProgress color="success" />) : (

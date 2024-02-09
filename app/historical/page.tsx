@@ -30,18 +30,20 @@ export default function Page() {
   const [mapboxStyle, setmapboxStyle] = useState('mapbox://styles/mapbox/light-v9');
   const [layer, setLayer] = useState(null);
   const [layerType, setLayerType] = useState('');
-  const [year, setYear] = useState(null);
+  const [year, setYear] = useState('');
   const mapRef = useRef(null);
   const [chartLoading, setChartLoading] = useState<boolean>(false);
   const [bottomBarOpen, setBottomBarOpen] = useState<boolean>(false);
   const [splineData, setSplineData] = useState([]);
   const [seconds, setSeconds] = useState(0);
+  const [adminArea, setAdminArea] = useState(null);
   const [isRunning, setIsRunning] = useState(true);
   const [popupLon, setPopupLon] = useState(null);
   const [popupLat, setPopupLat] = useState(null);
   const [popupLoading, setPopupLoading] = useState<boolean>(false);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [annualData, setAnnualData] = useState(null);
   const totalSeconds = 62;
   const router = useRouter();
 
@@ -64,40 +66,13 @@ export default function Page() {
   const settlementSource = {
     id: "settlementSource",
     type: 'geojson',
-    data: settlements,
-    cluster: true,
-    clusterMaxZoom: 14,
-    clusterRadius: 50
+    data: settlements
   };
-
-  const clusteredSettlementLayer = {
-    id: 'clusters',
-    type: 'circle',
-    source: 'settlementSource',
-    filter: ['has', 'point_count'],
-    paint: {
-      'circle-color': '#0ca296',
-      'circle-radius': 20
-    }
-  }
-
-  const settlementClusterNumber = {
-    id: 'cluster-count',
-    type: 'symbol',
-    source: 'settlementSource',
-    filter: ['has', 'point_count'],
-    layout: {
-      'text-field': ['get', 'point_count_abbreviated'],
-      'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-      'text-size': 12
-    }
-  }
 
   const unclusteredSettlementPointLayer = {
     id: 'unclustered-point',
     type: 'circle',
     source: 'settlementSource',
-    filter: ['!', ['has', 'point_count']],
     paint: {
       'circle-color': '#0ca296',
       'circle-radius': 4,
@@ -159,22 +134,74 @@ const LAYER_TYPES = {
     //setShowPopup(false);
   }
 
-  const loadSplineData = (layerType, id, yr) => {
-    console.log('loadSplineData layerType', layerType)
-    console.log('loadSplineData id: ',id)
-    console.log('loadSplineData year: ',yr)
+  const getAnnualPm25Avg = (admin, yr) => {
 
+    console.log('admin', admin);
+    console.log('year ann pm25', yr);
+    axios.get('/annual_avg', {
+      params: { admin_area: admin, year: yr }
+    })
+      .then((response) => {
+        console.log('annual pm25 avg', response.data.message );
+      }).finally(() => {
+        //setChartLoading(false);
+      })
+      .catch((e) => { console.log(e) });
+  }
+
+  const getLongTermPm25Avg = (admin) => {
+
+    console.log('admin', admin);
+    axios.get('/long_term_avg', {
+      params: { admin_area: admin }
+    })
+      .then((response) => {
+        console.log('Longterm pm25 avg', response.data.message );
+      }).finally(() => {
+        //setChartLoading(false);
+      })
+      .catch((e) => { console.log(e) });
+  }
+
+
+  const loadSplineData = (layerType, id, yr) => {
+    setChartLoading(true);
     if (layerType === LAYER_TYPES.pm25){
+      // axios.get('/admin_area', {
+      //   params: { sett_id: id }
+      // })
+      //   .then((response) => {
+      //     setAdminArea(response.data.message[0]['comm_admin_area']);
+      //     //getAnnualPm25Avg(response.data.message[0]['comm_admin_area'], yr);
+      //     //getLongTermPm25Avg(response.data.message[0]['comm_admin_area']);
+      //     console.log('adminArea1', response.data.message[0]['comm_admin_area']);
+      //   }).finally(() => {
+      //     console.log('adminArea', adminArea);
+          
+      //   })
+      //   .catch((e) => { console.log(e) });
+
         axios.get('/pm25daily', {
             params: { sett_id: id, year: yr  }
           })
             .then((response) => {
               setSplineData(response.data.message);
-              console.log("pm25 data", response.data.message);
+              //console.log("pm25 data", response.data.message);
             }).finally(() => {
               setChartLoading(false);
             })
             .catch((e) => { console.log(e) });
+
+            axios.get('/aggregated', {
+              params: { sett_id: id, year: yr  }
+            })
+              .then((response) => {
+                setAnnualData(response.data.message[0]);
+                console.log("aggregated data", response.data.message);
+              }).finally(() => {
+                setChartLoading(false);
+              })
+              .catch((e) => { console.log(e) });
     } else if (layerType === LAYER_TYPES.aqhi){
         axios.get('/aqhidaily', {
             params: { sett_id: id, year: yr  }
@@ -199,7 +226,8 @@ const LAYER_TYPES = {
     setHistoricalLayer(newLayer);
     setYearArray(newLayer.years)
     setmapboxStyle(newLayer.mapboxUrl)
-    setSidebarOpen(true)
+    setSidebarOpen(true);
+    setChartLoading(true);
   }
 
   const handleLayerYearChange = (year) => {
@@ -236,10 +264,6 @@ const LAYER_TYPES = {
       }
 
   }
-
-
-
-
 
   const handleCommunityChange = (value) => {
     if (value === '') {
@@ -306,6 +330,9 @@ const LAYER_TYPES = {
                 yearArray={yearArray}
                 dropdown={handleCommunityChange}
                 communityName={communityName}
+                yearValue={year}
+                barData={annualData}
+                isLoading={chartLoading}
                 />
                 
                 )}
@@ -323,8 +350,6 @@ const LAYER_TYPES = {
                 />
           )}
           <Source {...settlementSource}>
-            <Layer {...clusteredSettlementLayer} />
-            <Layer {...settlementClusterNumber} />
             <Layer {...unclusteredSettlementPointLayer} />
           </Source>
           <NavigationControl position='top-right' />

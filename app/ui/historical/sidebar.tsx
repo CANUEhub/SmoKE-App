@@ -13,13 +13,20 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import ForecastCard from './forecastCard';
 import CircularProgress from '@mui/material/CircularProgress';
-import { BarChart } from '@mui/x-charts/BarChart';
+import { BarChart  } from '@mui/x-charts/BarChart';
 import LayerTypes from '../../../public/data/raster_data.json'
 import Dropdown from '../dropdown';
 
 const drawerWidth = 400;
+const LAYER_TYPES_HEADING = {
+    pm25: 'ANNUAL PM 2.5 COMPARISON, ',
+    aqhi: 'ANNUAL AQHI COMPARISON,',
+    temp: 'ANNUAL TEMPERATURE COMPARISON,',
+    precip: 'ANNUAL PRECIPITATION COMPARISON,',
+    burn: 'ANNUAL PM 2.5 COMPARISON,'
+}
 
-export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dropdown, communityName, isLoading = false, }) {
+export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dropdown, communityName, isLoading, yearValue = "", barData }) {
     const theme = useTheme();
     const [year, setYear] = React.useState('');
     const handleYearChange = (evt) => {
@@ -29,28 +36,35 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
         }
         const newYear = evt.target.value;
         setYear(newYear);
-        console.log("Year change sidebar", newYear);
         onYearChange(newYear);
     };
     const layer = LayerTypes.find((hist) => hist.id === layerType);
-
-
 
     return (
         <Drawer
             variant="persistent"
             sx={{
                 flexShrink: 0,
-                [`& .MuiDrawer-paper`]: { width: '20%', boxSizing: 'border-box', zIndex: 1 },
+                [`& .MuiDrawer-paper`]: { width: '30%', boxSizing: 'border-box', zIndex: 1 },
             }}
             open={isOpen}
         >
-            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", marginTop: 20 }}>
-                <Dropdown onChildStateChange={dropdown} onMap={false} />
+            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", m: 4, marginTop: 13, borderBottom: "1px solid #E0E0E0" }}>
+
+                <InputLabel sx={{
+                    fontSize: 15,
+                    color: 'black',
+                    fontWeight: 300
+                }}>Search Communities</InputLabel>
+                <Dropdown sx={{}} onChildStateChange={dropdown} onMap={false} />
+                <InputLabel sx={{
+                    fontSize: 15,
+                    color: 'black',
+                    fontWeight: 300
+                }}>Select Year</InputLabel>
                 {yearArray ? (
 
-                    <FormControl sx={{maxWidth:350, margin:'0 1rem'}}>
-                        <InputLabel  id="demo-simple-select-label">Year</InputLabel>
+                    <FormControl sx={{ maxWidth: 350 }}>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
@@ -81,23 +95,104 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
                     </FormControl>
 
                 )}
-                <Typography sx={{ fontSize: 18, margin:'0 auto', padding:2 }} variant="h2">
+                <Typography sx={{ fontSize: 18, fontWeight: 900, paddingTop: '2rem', paddingBottom: '1rem' }}>
                     {communityName}
                 </Typography>
             </Box>
-            <Box>
-                {isLoading ? (
-                    <CircularProgress/>    
-                ):(
-                    <BarChart
-                    xAxis={[{ scaleType: 'band', data: ['Community', 'National', 'Provincial'] }]}
-                    series={[{ data: [4, 3, 5] }, { data: [1, 6, 3] }]}
-                    width={drawerWidth*0.9}
-                    height={drawerWidth*0.75}
-                  />
-                )}
+            {barData && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        m: 4,
+                        marginTop:0
+                    }}>
 
-            </Box>
+                    <Typography variant='h6' sx={{
+                        fontWeight: 700
+                    }}>
+                        {LAYER_TYPES_HEADING[layerType.id]} {yearValue}
+                    </Typography>
+
+
+                    <Typography sx={{
+                        fontSize: 14
+                    }}>
+                        Compare community average to national and provincial averages
+                    </Typography>
+
+                    <Box sx={{display:'flex', flexDirection:'row'}}>
+                        <Box 
+                            sx={{
+                                display:'flex',
+                                flexDirection:'column',
+                                m:1, 
+                                marginLeft:0
+                            }}
+                        >
+                            <Typography
+                            sx={{
+                                fontSize:25,
+                                fontWeight:600    
+                            }}>
+                                {barData['hcaco_pm25_avg']}
+                            </Typography>
+                            <Typography
+                            sx={{
+                                fontSize:12,
+                                color:'#BDBDBD'  
+                            }}>Year Avg
+                            </Typography>
+
+                        </Box>
+                        <Box 
+                            sx={{
+                                display:'flex',
+                                flexDirection:'column',
+                                m:1
+                            }}
+                        >
+                            <Typography
+                            sx={{
+                                fontSize:20,
+                                fontWeight:600    
+                            }}>
+                            {barData['hclval']}
+                        </Typography>
+                        <Typography
+                            sx={{
+                                fontSize:12,
+                                color:'#BDBDBD'  
+                            }}>
+                                Long term Avg 
+                            </Typography>
+                            <Typography
+                            sx={{
+                                fontSize:12,
+                                color:'#BDBDBD'  
+                            }}>
+                                ({barData['halcanyearspan']})
+                            </Typography>
+                        </Box>
+                    </Box>
+
+                    <Box>
+                            <BarChart
+                                xAxis={[{ scaleType: 'band', data: ['Community', 'National', 'Provincial'] }]}
+                                series={[
+                                    { label: 'Year Avg',data: [barData['hcaco_pm25_avg'], barData['haacanval'], barData['haavalue']] },
+                                    { label: 'Long term Avg', data: [barData['hclval'], barData['halcanval'], barData['halval']] }]}
+                                width={drawerWidth * 0.9}
+                                height={drawerWidth * 0.75}
+                            >
+                                
+                            </BarChart>
+
+                            
+                        </Box>
+                </Box>
+            )}
         </Drawer>
     );
 }
