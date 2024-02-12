@@ -37,6 +37,7 @@ export default function Page() {
   const [popupLoading, setPopupLoading] = useState<boolean>(false);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [startSecondIndex, setStartSecondIndex] = useState(null);
+  const [cursor, setCursor] = useState<string>('auto');
   
   const totalSeconds = 71;
 
@@ -96,7 +97,7 @@ export default function Page() {
     source: 'settlementSource',
     paint: {
       'circle-color': '#0ca296',
-      'circle-radius': 4,
+      'circle-radius': 5,
       'circle-stroke-width': 1,
       'circle-stroke-color': '#fff'
     }
@@ -290,6 +291,9 @@ export default function Page() {
     setMapLoaded(true);
   }
 
+  const onMouseEnter = useCallback(() => setCursor('pointer'), []);
+  const onMouseLeave = useCallback(() => setCursor('auto'), []);
+
 
   return (
     <main className={classes.mainStyle}>
@@ -304,12 +308,17 @@ export default function Page() {
           initialViewState={{ latitude: 50.582, longitude: -105.599, zoom: 3 }}
           maxZoom={20}
           minZoom={1}
+          cursor={cursor}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
           interactiveLayerIds={["clusters", "unclustered-point"]}
           onClick={onMapClick}
         >
           <NavigationControl position='bottom-right' />
           <NavBar onChildStateChange={handleCommunityChange}  ></NavBar>
-          <Dropdown onChildStateChange={handleCommunityChange}></Dropdown>
+          <Dropdown 
+          onChildStateChange={handleCommunityChange}
+          communityName={communityName}></Dropdown>
           {layer && (
             <Source {...layer}>
               <Layer {...wmsLayer}></Layer>

@@ -251,7 +251,7 @@ const LAYER_TYPES = {
     const currentlayers = mapRef.current.getStyle().layers
     if(layerType === LAYER_TYPES.aqhi){
       setBottomBarOpen(false);
-      setSidebarOpen(false);
+      //setSidebarOpen(false);
     }
     loadSplineData(layerType, community, year);
 

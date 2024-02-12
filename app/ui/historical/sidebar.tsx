@@ -94,6 +94,10 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
                     </FormControl>
 
                 )}
+                {!layerType &&(
+
+                <Typography color={'error'}>Please select the PM2.5 or AQHI layer above</Typography>
+                )}
                 <Typography sx={{ fontSize: 18, fontWeight: 900, paddingTop: '2rem', paddingBottom: '1rem' }}>
                     {communityName}
                 </Typography>

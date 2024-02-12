@@ -49,9 +49,7 @@ export default function Dropdown({ onChildStateChange, onMap=true, communityName
         options={communities}
         sx={ onMap ? (onMapStyles):(offMapStyles)}
         getOptionKey={(option) => option.id}
-
         renderInput={(params) => {
-          console.log('params', params);
           return <TextField {...params}
           placeholder={ communityName ? (communityName):("Select...")}
           InputProps={{ ...params.InputProps}} />

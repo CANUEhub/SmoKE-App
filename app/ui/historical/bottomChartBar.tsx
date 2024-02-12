@@ -10,10 +10,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import ForecastCard from './forecastCard';
 import { ResponsiveChartContainer } from '@mui/x-charts/ResponsiveChartContainer';
 import { LineChart } from '@mui/x-charts/LineChart';
+import { Tooltip } from '@mui/x-charts';
 import { LinePlot, MarkPlot } from '@mui/x-charts/LineChart';
 import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis';
 import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis';
 import CircularProgress from '@mui/material/CircularProgress';
+import { mdiConsoleNetwork } from '@mdi/js';
 
 const LAYER_TYPES = {
     pm25:'co_pm25_avg',
@@ -38,11 +40,10 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
     })
 
     const dataArray = spline.map((data)=>{
-
         return Number(data[LAYER_TYPES[layerType]]);
     })
     const yAxisCommon = {
-        label:'PM2.5 (ug/m3)'
+        label:'PM2.5 (ug/m3)',
       } 
 
     const xAxisCommon = {
@@ -63,7 +64,18 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
             console.log('dataArray not num', `${x} ${y}`)
         }
     })
-    
+
+    const CustomTooltip = ({ active, payload, label, unit }) => {
+        if (active && payload && payload.length) {
+          return (
+            <div style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '10px' }}>
+              <p>{`${label} : ${payload[0].value} ${unit}`}</p>
+            </div>
+          );
+        }
+        return null;
+      };
+
     return (
         <Card sx={{ position: 'absolute', width:'70%', left:'30%', bottom:0}}>
 
@@ -79,7 +91,7 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
                         {
                             data: dataArray,
                             showMark: false,
-                            
+                            valueFormatter: (element) => `${element} ug/m3`
                         }
                     ]}
                     />
