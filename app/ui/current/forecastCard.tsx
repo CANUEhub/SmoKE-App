@@ -17,6 +17,8 @@ import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import Icon from '@mdi/react';
 import { mdiTemperatureCelsius } from '@mdi/js';
 import { mdiWeatherLightning } from '@mdi/js';
+import AqhiTypography from './aqhiTypography';
+import Pm25Typography from './pm25Typography';
 
 
 export default function ForecastCard({ settlementName, time, pm25, aqhi, precip, temp }) {
@@ -63,9 +65,12 @@ export default function ForecastCard({ settlementName, time, pm25, aqhi, precip,
 
                 <Box sx={{ display: 'flex' }}>
                     <CardContent sx={{ paddingTop: 0 }}>
-                        <Typography sx={{ fontSize: VALUE_FONT_SIZE, fontWeight: 800, lineHeight: 1 }}>
+                        {/* <Typography sx={{ fontSize: VALUE_FONT_SIZE, fontWeight: 800, lineHeight: 1 }}>
                             {pm25}
-                        </Typography>
+                        </Typography> */}
+                        <Pm25Typography value={pm25}>
+                        {pm25}
+                        </Pm25Typography>
                         <Typography sx={{
                             paddingTop: 0,
                             fontSize: 12, display: 'flex',
@@ -92,9 +97,9 @@ export default function ForecastCard({ settlementName, time, pm25, aqhi, precip,
                         <Typography></Typography>
                     </CardContent>
                     <CardContent sx={{ paddingTop: 0 }}>
-                        <Typography sx={{ fontSize: VALUE_FONT_SIZE, fontWeight: 800, lineHeight: 1 }}>
-                            {aqhi}
-                        </Typography>
+                        <AqhiTypography value={Number(aqhi)}>
+                        {aqhi}
+                        </AqhiTypography>
                         <Typography sx={{
                             paddingTop: 0,
                             fontSize: 12, display: 'flex',
