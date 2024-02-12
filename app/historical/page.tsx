@@ -1,7 +1,7 @@
 "use client";
 
-import Map, { Source, Layer, NavigationControl } from "react-map-gl";
-import { useState, useRef, useEffect } from 'react';
+import Map, { Source, Layer } from "react-map-gl";
+import { useState, useRef, useEffect, useCallback } from 'react';
 import "mapbox-gl/dist/mapbox-gl.css";
 import NavBar from "../ui/navbar";
 import Sidebar from "../ui/historical/sidebar";
@@ -46,6 +46,7 @@ export default function Page() {
   const [annualData, setAnnualData] = useState(null);
   const totalSeconds = 62;
   const router = useRouter();
+  const [cursor, setCursor] = useState<string>('auto');
 
   useEffect(() => {
     // Check if the user is authenticated
@@ -75,7 +76,7 @@ export default function Page() {
     source: 'settlementSource',
     paint: {
       'circle-color': '#0ca296',
-      'circle-radius': 4,
+      'circle-radius': 5,
       'circle-stroke-width': 1,
       'circle-stroke-color': '#fff'
     }
@@ -311,6 +312,8 @@ const LAYER_TYPES = {
     setMapLoaded(true);
   }
 
+  const onMouseEnter = useCallback(() => setCursor('pointer'), []);
+  const onMouseLeave = useCallback(() => setCursor('grab'), []);
   return (
     <main className={classes.mainStyle}>
       <ThemeClient>
@@ -325,6 +328,9 @@ const LAYER_TYPES = {
           maxZoom={20}
           minZoom={1}
           styleDiffing={false}
+          cursor={cursor}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
           interactiveLayerIds={["clusters", "unclustered-point"]}
           onClick={onMapClick}
         >
@@ -362,8 +368,6 @@ const LAYER_TYPES = {
           <Source {...settlementSource}>
             <Layer {...unclusteredSettlementPointLayer} />
           </Source>
-          <NavigationControl position='top-right' />
-
         </Map>
       </ThemeClient>
     </main>

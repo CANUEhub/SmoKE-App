@@ -282,9 +282,6 @@ export default function Page() {
     setCommunityName(sett.properties.community_name);
     mapRef.current.flyTo({ center: [sett.geometry.coordinates[0], sett.geometry.coordinates[1]], zoom: 12 });
 
-    //router.push("/dashboard");
-
-
   };
 
   const handleMapLoad = () => {
@@ -292,7 +289,7 @@ export default function Page() {
   }
 
   const onMouseEnter = useCallback(() => setCursor('pointer'), []);
-  const onMouseLeave = useCallback(() => setCursor('auto'), []);
+  const onMouseLeave = useCallback(() => setCursor('grab'), []);
 
 
   return (
