@@ -35,7 +35,7 @@ export default function Forecast({ forcastObject, settlementName, isLoading, han
             overflow: 'auto'
              }}>
                     <IconButton sx={{position:'relative', float:'right'}} aria-label="Close forecast" onClick={() => handleClose()}>
-                        <MinimizeIcon fontSize='large' />
+                        <CloseIcon fontSize='large' />
                     </IconButton>
                 <CardContent sx={{ display:'flex', justifyContent: 'space-between', paddingBottom:0 }}>
                     <Typography variant="h5" sx={{color: "#747474", fontWeight:"800"}}>

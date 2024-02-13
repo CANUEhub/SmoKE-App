@@ -31,8 +31,6 @@ export default function Page() {
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
-  const [popupLon, setPopupLon] = useState(null);
-  const [popupLat, setPopupLat] = useState(null);
   const [aqhiData, setAqhiData] = useState(null);
   const [popupLoading, setPopupLoading] = useState<boolean>(false);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
@@ -105,6 +103,21 @@ export default function Page() {
 
   }
 
+  const fetchForecast = (featureLayerID) => {
+    console.log('featureLayer.id', featureLayerID)
+    axios.get('/forecast', {
+      params: { sett_id: featureLayerID }
+    })
+      .then((response) => {
+        console.log("response", response.data.message[0])
+        setAqhiData(response.data.message[0]);
+        console.log("aqhi", aqhiData);
+      }).finally(() => {
+        setPopupLoading(false);
+      })
+      .catch((e) => { console.log(e) });
+  }
+
   const onMapClick = (evt: mapboxgl.MapLayerMouseEvent) => {
 
     if (!mapRef || !evt.features) {
@@ -133,23 +146,7 @@ export default function Page() {
       });
     } else if (featureLayer.layer.id === "unclustered-point") {
       console.log("featureLayer", featureLayer)
-      setPopupLat(featureLayer.properties.lat);
-      setPopupLon(featureLayer.properties.lon);
-      setShowPopup(true);
-      setPopupLoading(true);
       handleCommunityChange(featureLayer.id);
-
-      axios.get('/forecast', {
-        params: { sett_id: featureLayer.id }
-      })
-        .then((response) => {
-          console.log("response", response.data.message[0])
-          setAqhiData(response.data.message[0]);
-          console.log("aqhi", aqhiData);
-        }).finally(() => {
-          setPopupLoading(false);
-        })
-        .catch((e) => { console.log(e) });
     } else {
       return;
     }
@@ -239,10 +236,13 @@ export default function Page() {
     if (value === '') {
       return;
     }
-    console.log("handleCommunityChange value", value)
+    fetchForecast(value);
+    setShowPopup(true);
+    setPopupLoading(true);
     const sett = features.find((feature, index) => {
       return feature.id == value
     });
+    setCommunityName(sett.properties.community_name)
     const evt = new Event("click");
     zoomToSelectedLoc(evt, sett, value);
   }
@@ -280,7 +280,6 @@ export default function Page() {
     // stop event bubble-up which triggers unnecessary events
     e.stopPropagation();
     setCommunity(index.toString());
-    setCommunityName(sett.properties.community_name);
     mapRef.current.flyTo({ center: [sett.geometry.coordinates[0], sett.geometry.coordinates[1]], zoom: 12 });
 
   };
