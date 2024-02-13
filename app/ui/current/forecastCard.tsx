@@ -42,7 +42,7 @@ export default function ForecastCard({ settlementName, time, pm25, aqhi, precip,
     }));
 
     return (
-        <Card variant="outlined" sx={{ display: 'flex', m: 1, height: "17vh", border: "none", boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.3)' }}>
+        <Card variant="outlined" sx={{ display: 'flex', m: 1, height: "70%", border: "none", boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.3)' }}>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 <CardContent sx={{ paddingBottom: 0, paddingTop: "0.5rem" }}>
                 <Tooltip title={settlementName} arrow placement="top">
@@ -139,26 +139,27 @@ The AQHI is measured on a scale ranging from 1-10+. The AQHI index values are gr
                 </Box>
             </Box>
             <Box sx={{ borderLeft: "1px solid #E0E0E0" }}>
-                <CardContent sx={{ display:'flex', gap:0.8, alignItems:'flex-end' }}>
-                <Typography>
-                    <Icon color={'#E0E0E0'} path={mdiWeatherLightning} size={1.2} />
-                    </Typography>
-                    <Typography sx={{ fontSize: VALUE_FONT_SIZE, fontWeight: 800, lineHeight: 1 }}>
-                        {precip}
-                    </Typography>
-                    <Typography sx={{ paddingTop: 0, fontSize: 12, lineHeight: 1 }}>
-                        mm/day
-                    </Typography>
-                </CardContent>
-                <CardContent sx={{ paddingTop: 0, display:'flex', gap:0.8 }}>
-                    <Typography>
-                    <Icon color={'#E0E0E0'} path={mdiTemperatureCelsius} size={1.3} />
-                    </Typography>
-                    <Typography sx={{ fontSize: VALUE_FONT_SIZE, fontWeight: 800, lineHeight: 1 }}>
-                        {temp}°
-                    </Typography>
-                </CardContent>
-            </Box>
+    <CardContent sx={{ display: 'flex', gap: 0.5, alignItems: 'center', padding: '0.3rem', paddingTop:'1rem' }}>
+        <Typography sx={{ alignSelf: 'flex-start' }}>
+            <Icon color={'#E0E0E0'} path={mdiWeatherLightning} size={1.2} />
+        </Typography>
+        <Typography sx={{ fontSize: VALUE_FONT_SIZE, fontWeight: 800, lineHeight: 1 }}>
+            {precip}
+        </Typography>
+        <Typography sx={{ paddingTop: 0, fontSize: 12, lineHeight: 1 }}>
+            mm/day
+        </Typography>
+    </CardContent>
+    <CardContent sx={{ display: 'flex', gap: 0.5, alignItems: 'center', paddingLeft:'0.1rem' }}>
+        <Typography sx={{ alignSelf: 'flex-start' }}>
+            <Icon color={'#E0E0E0'} path={mdiTemperatureCelsius} size={1.3} />
+        </Typography>
+        <Typography sx={{ fontSize: VALUE_FONT_SIZE, fontWeight: 800, lineHeight: 1 }}>
+            {temp}°
+        </Typography>
+    </CardContent>
+</Box>
+
         </Card>
     );
 }

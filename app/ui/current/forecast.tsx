@@ -22,7 +22,18 @@ export default function Forecast({ forcastObject, settlementName, isLoading, han
 
 
     return (
-        <Card sx={{ position: 'absolute', left: '1vw', bottom:"3%", padding: '0.7rem', paddingTop:'0', backgroundColor: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(5px)', height:"70%"}}>
+        <Card 
+        sx={{ 
+            position: 'absolute', 
+            left: '1vw', 
+            bottom:"3%", 
+            padding: '0.7rem', 
+            paddingTop:'0', 
+            backgroundColor: 'rgba(255, 255, 255, 0.6)', 
+            backdropFilter: 'blur(5px)',
+            height:"70%",
+            overflow: 'auto'
+             }}>
                     <IconButton sx={{position:'relative', float:'right'}} aria-label="Close forecast" onClick={() => handleClose()}>
                         <MinimizeIcon fontSize='large' />
                     </IconButton>

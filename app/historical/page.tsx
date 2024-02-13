@@ -58,7 +58,8 @@ export default function Page() {
     if (!isAuthenticated) {
       // Redirect to the login page if not authenticated
       router.push('/auth');
-    } else if(isMobile || screenWidth < 1440) {
+    } 
+    else if(isMobile || screenWidth < 1430) {
       router.push('/mobile');
     }
   }, []);
