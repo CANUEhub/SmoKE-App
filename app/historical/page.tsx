@@ -59,9 +59,9 @@ export default function Page() {
       // Redirect to the login page if not authenticated
       router.push('/auth');
     } 
-    // else if(isMobile || screenWidth < 1430) {
-    //   router.push('/mobile');
-    // }
+    else if(isMobile || screenWidth < 1341) {
+      router.push('/mobile');
+    }
   }, []);
   // layers 
 
