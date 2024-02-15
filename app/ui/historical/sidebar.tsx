@@ -55,7 +55,7 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
                     color: 'black',
                     fontWeight: 300
                 }}>Search Communities</InputLabel>
-                <Dropdown sx={{}} onChildStateChange={dropdown} onMap={false} communityName={communityName} />
+                <Dropdown onChildStateChange={dropdown} onMap={false} communityName={communityName} />
                 <InputLabel sx={{
                     fontSize: 15,
                     color: 'black',

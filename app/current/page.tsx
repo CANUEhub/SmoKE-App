@@ -147,7 +147,7 @@ export default function Page() {
     } else if (featureLayer.layer.id === "unclustered-point") {
        console.log(featureLayer.properties['Community_'])
       // setCommunityName(featureLayer.properties['Community_'])
-      setCommunityName(featureLayer.properties['Community_'])
+      setCommunityName(featureLayer.properties['Community_']);
       handleCommunityChange(featureLayer.properties.commid);
     } else {
       return;
@@ -244,9 +244,7 @@ export default function Page() {
     const sett = features.find((feature, index) => {
       return feature.properties.commid == value
     });
-    console.log("sett.properties['Community_']", sett.properties['Community_'])
-    const commname = sett.properties['Community_']
-    setCommunityName(commname);
+    setCommunityName(sett.properties['Community_']);
     const evt = new Event("click");
     zoomToSelectedLoc(evt, sett, value);
   }
@@ -318,7 +316,7 @@ export default function Page() {
           <NavBar onChildStateChange={handleCommunityChange}  ></NavBar>
           <Dropdown 
           onChildStateChange={handleCommunityChange}
-          communityName={communityName}></Dropdown>
+          communityName={communityName}/>
           {layer && (
             <Source {...layer}>
               <Layer {...wmsLayer}></Layer>
