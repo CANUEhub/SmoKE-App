@@ -146,7 +146,7 @@ export default function Page() {
       });
     } else if (featureLayer.layer.id === "unclustered-point") {
       console.log("featureLayer", featureLayer)
-      handleCommunityChange(featureLayer.id);
+      handleCommunityChange(featureLayer.properties.commid);
     } else {
       return;
     }
@@ -240,9 +240,9 @@ export default function Page() {
     setShowPopup(true);
     setPopupLoading(true);
     const sett = features.find((feature, index) => {
-      return feature.id == value
+      return feature.properties.commid === value
     });
-    setCommunityName(sett.properties.community_name)
+    setCommunityName(sett.properties['Community_'])
     const evt = new Event("click");
     zoomToSelectedLoc(evt, sett, value);
   }

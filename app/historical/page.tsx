@@ -120,7 +120,7 @@ const LAYER_TYPES = {
       });
     } else if (featureLayer.layer.id === "unclustered-point") {
       setChartLoading(true);
-      handleCommunityChange(featureLayer.id);
+      handleCommunityChange(featureLayer.properties.commid);
       console.log('featureLayer:', featureLayer);
       if(year){
 
@@ -284,7 +284,7 @@ const LAYER_TYPES = {
     console.log("handleCommunityChange value", value)
     setCommunity(value);
     const sett = features.find((feature, index) => {
-      return feature.id == value
+      return feature.properties.commid === value
     });
     const evt = new Event("click");
     if(layerType && year) {

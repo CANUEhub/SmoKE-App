@@ -39,7 +39,6 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
         onYearChange(newYear);
     };
     const layer = LayerTypes.find((hist) => hist.id === layerType);
-
     return (
         <Drawer
             variant="persistent"
@@ -184,8 +183,8 @@ export default function Sidebar({ isOpen, layerType, onYearChange, yearArray, dr
                             <BarChart
                                 xAxis={[{ scaleType: 'band', data: ['Community', 'National', 'Provincial'] }]}
                                 series={[
-                                    { label: 'Year Avg',data: [barData['hcaco_pm25_avg'], barData['haacanval'], barData['haavalue']] },
-                                    { label: 'Long term Avg', data: [barData['hclval'], barData['halcanval'], barData['halval']] }]}
+                                    { label: 'Year Avg',data: [Number(barData['hcaco_pm25_avg']), Number(barData['haacanval']), Number(barData['haavalue'])] },
+                                    { label: 'Long term Avg', data: [Number(barData['hclval']), Number(barData['halcanval']), Number(barData['halval'])] }]}
                                 width={drawerWidth * 0.9}
                                 height={drawerWidth * 0.75}
                             >
