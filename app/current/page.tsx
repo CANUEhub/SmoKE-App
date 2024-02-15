@@ -141,11 +141,13 @@ export default function Page() {
         mapRef.current.easeTo({
           center: featureLayer.geometry.coordinates,
           zoom,
-          duration: 500
+          duration: 600
         });
       });
     } else if (featureLayer.layer.id === "unclustered-point") {
-      console.log("featureLayer", featureLayer)
+       console.log(featureLayer.properties['Community_'])
+      // setCommunityName(featureLayer.properties['Community_'])
+      setCommunityName(featureLayer.properties['Community_'])
       handleCommunityChange(featureLayer.properties.commid);
     } else {
       return;
@@ -240,9 +242,11 @@ export default function Page() {
     setShowPopup(true);
     setPopupLoading(true);
     const sett = features.find((feature, index) => {
-      return feature.properties.commid === value
+      return feature.properties.commid == value
     });
-    setCommunityName(sett.properties['Community_'])
+    console.log("sett.properties['Community_']", sett.properties['Community_'])
+    const commname = sett.properties['Community_']
+    setCommunityName(commname);
     const evt = new Event("click");
     zoomToSelectedLoc(evt, sett, value);
   }
@@ -277,7 +281,6 @@ export default function Page() {
   }
 
   const zoomToSelectedLoc = (e, sett, index) => {
-    // stop event bubble-up which triggers unnecessary events
     e.stopPropagation();
     setCommunity(index.toString());
     mapRef.current.flyTo({ center: [sett.geometry.coordinates[0], sett.geometry.coordinates[1]], zoom: 12 });

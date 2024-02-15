@@ -23,8 +23,6 @@ export default function Dropdown({ onChildStateChange, onMap=true, communityName
         if(newValue === null){
           return;
         }
-        
-        console.log("newValue", newValue.id);
         const communityID = newValue.id;
         setCommunity(communityID);
         // Invoke the callback provided by the parent

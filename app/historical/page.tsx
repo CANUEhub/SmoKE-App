@@ -120,7 +120,9 @@ const LAYER_TYPES = {
       });
     } else if (featureLayer.layer.id === "unclustered-point") {
       setChartLoading(true);
+      setCommunityName(featureLayer.properties['Community_'])
       handleCommunityChange(featureLayer.properties.commid);
+
       console.log('featureLayer:', featureLayer);
       if(year){
 
@@ -284,8 +286,9 @@ const LAYER_TYPES = {
     console.log("handleCommunityChange value", value)
     setCommunity(value);
     const sett = features.find((feature, index) => {
-      return feature.properties.commid === value
+      return feature.properties.commid == value
     });
+    setCommunityName(sett.properties['Community_'])
     const evt = new Event("click");
     if(layerType && year) {
         console.log('called')
@@ -301,7 +304,7 @@ const LAYER_TYPES = {
     e.stopPropagation();
     setCommunity(index);
     console.log('community', index);
-    setCommunityName(sett.properties.community_name);
+    setCommunityName(sett.properties['Community_'])
     mapRef.current.flyTo({ center: [sett.geometry.coordinates[0], sett.geometry.coordinates[1]], zoom: 12 });
     setSidebarOpen(true);
     if(year && layerType === LAYER_TYPES.pm25){
