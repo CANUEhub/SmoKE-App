@@ -133,58 +133,9 @@ const LAYER_TYPES = {
     }
   }
 
-  const handlePopupClose = () => {
-    setPopupLoading(false);
-    //setShowPopup(false);
-  }
-
-  const getAnnualPm25Avg = (admin, yr) => {
-
-    console.log('admin', admin);
-    console.log('year ann pm25', yr);
-    axios.get('/annual_avg', {
-      params: { admin_area: admin, year: yr }
-    })
-      .then((response) => {
-        console.log('annual pm25 avg', response.data.message );
-      }).finally(() => {
-        //setChartLoading(false);
-      })
-      .catch((e) => { console.log(e) });
-  }
-
-  const getLongTermPm25Avg = (admin) => {
-
-    console.log('admin', admin);
-    axios.get('/long_term_avg', {
-      params: { admin_area: admin }
-    })
-      .then((response) => {
-        console.log('Longterm pm25 avg', response.data.message );
-      }).finally(() => {
-        //setChartLoading(false);
-      })
-      .catch((e) => { console.log(e) });
-  }
-
-
   const loadSplineData = (layerType, id, yr) => {
     setChartLoading(true);
     if (layerType === LAYER_TYPES.pm25){
-      // axios.get('/admin_area', {
-      //   params: { sett_id: id }
-      // })
-      //   .then((response) => {
-      //     setAdminArea(response.data.message[0]['comm_admin_area']);
-      //     //getAnnualPm25Avg(response.data.message[0]['comm_admin_area'], yr);
-      //     //getLongTermPm25Avg(response.data.message[0]['comm_admin_area']);
-      //     console.log('adminArea1', response.data.message[0]['comm_admin_area']);
-      //   }).finally(() => {
-      //     console.log('adminArea', adminArea);
-          
-      //   })
-      //   .catch((e) => { console.log(e) });
-
         axios.get('/pm25daily', {
             params: { sett_id: id, year: yr  }
           })
@@ -196,7 +147,7 @@ const LAYER_TYPES = {
             })
             .catch((e) => { console.log(e) });
 
-            axios.get('/aggregated', {
+            axios.get('/aggregated_pm25', {
               params: { sett_id: id, year: yr  }
             })
               .then((response) => {
@@ -211,12 +162,20 @@ const LAYER_TYPES = {
             params: { sett_id: id, year: yr  }
           })
             .then((response) => {
+              console.log("Spline Data AQHI", response.data.message);
               setSplineData(response.data.message);
-              console.log("aqhi", response.data.message);
-            }).finally(() => {
-              setChartLoading(false);
             })
             .catch((e) => { console.log(e) });
+
+            axios.get('/aggregated_aqhi', {
+              params: { sett_id: id, year: yr  }
+            })
+              .then((response) => {
+                setAnnualData(response.data.message[0]);
+              }).finally(() => {
+                setChartLoading(false);
+              })
+              .catch((e) => { console.log(e) });
     } else {
         return;
     }
@@ -233,30 +192,24 @@ const LAYER_TYPES = {
     setChartLoading(true);
     setYear('');
     setAnnualData(null);
-    if (layerType === LAYER_TYPES.aqhi){
-      setBottomBarOpen(false);
-    } else {
-      setSidebarOpen(true);
-    }
+    setSidebarOpen(true);
+    setBottomBarOpen(false);
+    console.log('handleLayerYearChange newLayer.years', newLayer.years)
   }
 
   const handleLayerYearChange = (year) => {
+    console.log('handleLayerYearChange', year)
     const layerName = `${historicalLayer.prefix}${year.value}`
     setYear(year.value)
     setmapboxStyle(year.mapboxUrl)
     handleMapLayerChange(layerName, year.value, layerType);
-    if(community && layerType === LAYER_TYPES.pm25){
+    if(community){
         setBottomBarOpen(true);
     }
 
   }
 
   const handleMapLayerChange = (value, year, layerType) => {
-    const currentlayers = mapRef.current.getStyle().layers
-    if(layerType === LAYER_TYPES.aqhi){
-      setBottomBarOpen(false);
-      //setSidebarOpen(false);
-    }
     loadSplineData(layerType, community, year);
 
 
@@ -291,7 +244,6 @@ const LAYER_TYPES = {
     setCommunityName(sett.properties['Community_'])
     const evt = new Event("click");
     if(layerType && year) {
-        console.log('called')
         loadSplineData(layerType, value, year);
     }
     zoomToSelectedLoc(evt, sett, value);
@@ -307,7 +259,7 @@ const LAYER_TYPES = {
     setCommunityName(sett.properties['Community_'])
     mapRef.current.flyTo({ center: [sett.geometry.coordinates[0], sett.geometry.coordinates[1]], zoom: 12 });
     setSidebarOpen(true);
-    if(year && layerType === LAYER_TYPES.pm25){
+    if(year){
         setBottomBarOpen(true);
     }
   };

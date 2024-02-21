@@ -13,6 +13,7 @@ AND hcayear IN (${year})
 AND hclvar = 'co_pm25_avg'
 AND haayear IN (${year})
 AND haavar = 'COPM25'
+AND halvar = 'co_pm25_avg' 
 AND haacanyear IN (${year})
 AND halcanvar = 'co_pm25_avg'
 AND haacanvar = 'COPM25'`);

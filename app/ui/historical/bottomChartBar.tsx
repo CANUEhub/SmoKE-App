@@ -16,10 +16,19 @@ import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis';
 import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis';
 import CircularProgress from '@mui/material/CircularProgress';
 import { mdiConsoleNetwork } from '@mdi/js';
+import { compareAsc } from "date-fns";
 
 const LAYER_TYPES = {
     pm25:'co_pm25_avg',
-    aqhi:'aqhi',
+    aqhi:'aqhi_avg',
+    temp:'temp',
+    precip:'precip',
+    burn:'burn'
+}
+
+const LAYER_UNITS = {
+    pm25:'PM2.5 (ug/m3)',
+    aqhi:'',
     temp:'temp',
     precip:'precip',
     burn:'burn'
@@ -37,13 +46,13 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
 
     const timeArray = spline.map((data)=>{
         return new Date(data.day)
-    })
+    }).sort(compareAsc);
 
     const dataArray = spline.map((data)=>{
         return Number(data[LAYER_TYPES[layerType]]);
     })
     const yAxisCommon = {
-        label:'PM2.5 (ug/m3)',
+        label:`${LAYER_UNITS[layerType]}`,
       } 
 
     const xAxisCommon = {
@@ -64,18 +73,7 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
             console.log('dataArray not num', `${x} ${y}`)
         }
     })
-
-    const CustomTooltip = ({ active, payload, label, unit }) => {
-        if (active && payload && payload.length) {
-          return (
-            <div style={{ backgroundColor: '#fff', border: '1px solid #ccc', padding: '10px' }}>
-              <p>{`${label} : ${payload[0].value} ${unit}`}</p>
-            </div>
-          );
-        }
-        return null;
-      };
-
+    
     return (
         <Card sx={{ position: 'absolute', width:'70%', left:'30%', bottom:0}}>
 
@@ -91,7 +89,7 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
                         {
                             data: dataArray,
                             showMark: false,
-                            valueFormatter: (element) => `${element} ug/m3`
+                            valueFormatter: (element) => `${element} ${LAYER_UNITS[layerType]}`
                         }
                     ]}
                     />

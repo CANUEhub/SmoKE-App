@@ -60,6 +60,7 @@ export default function Dropdown({ onChildStateChange, onMap=true, communityName
                 onChange={(event: any, newValue) => {
                     handleCommunityChange(newValue);
                 }}
+                freeSolo
             />
         </div>
     );
