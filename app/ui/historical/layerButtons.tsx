@@ -1,27 +1,8 @@
 import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
-import Drawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import IconButton from '@mui/material/IconButton';
-import FilterDramaIcon from '@mui/icons-material/FilterDrama';
-import MasksIcon from '@mui/icons-material/Masks';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
-import ThermostatIcon from '@mui/icons-material/Thermostat';
-import ThunderstormIcon from '@mui/icons-material/Thunderstorm';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import { mdiSmoke, mdiAirFilter } from '@mdi/js';
-
-import CloseIcon from '@mui/icons-material/Close';
-import ForecastCard from './forecastCard';
-import CircularProgress from '@mui/material/CircularProgress';
-
-const drawerWidth = 500;
 
 const LAYER_TYPES = {
     pm25:'pm25',

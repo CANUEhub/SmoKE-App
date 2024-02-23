@@ -52,7 +52,7 @@ export default function Page() {
       // Redirect to the login page if not authenticated
       router.push('/auth');
     } 
-    else if(isMobile || screenWidth < 1341) {
+    else if(isMobile || screenWidth < 1271) {
       router.push('/mobile');
     }
     
