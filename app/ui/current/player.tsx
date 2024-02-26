@@ -11,7 +11,7 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import Slider from "@mui/material/Slider";
-import {intlFormat} from "date-fns";
+import {intlFormat, format, parseISO} from "date-fns";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Stack from '@mui/material/Stack'
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
@@ -54,14 +54,29 @@ export default function Player({onPlaybackChange, onTimeChange, onStepChange, is
     onStepChange(currentSeconds-1)
   }
 
+  function formatDateTime(dateString) {
+    const date = parseISO(dateString);
+
+    const year = date.getUTCFullYear();
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+    const day = date.getUTCDate().toString().padStart(2, '0');
+    const hours = date.getUTCHours().toString().padStart(2, '0');
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+    const seconds = date.getUTCSeconds().toString().padStart(2, '0');
+
+    return `${month}/${day}/${year}, ${hours}:${minutes}:${seconds}`;
+}
+
+
+
   const marks = [
     {
       value: 0,
-      label: `${intlFormat(new Date(timeStamps[0]), date_options)}`,
+      label: `${formatDateTime(timeStamps[0])}`,
     },
     {
-      value: 71,
-      label: `${intlFormat(new Date(timeStamps[61]), date_options)}`,
+      value: 70,
+      label: `${formatDateTime(timeStamps[70])}`,
     },
   ];
 
@@ -118,7 +133,7 @@ export default function Player({onPlaybackChange, onTimeChange, onStepChange, is
       </Typography>
 
       <Typography component="span" sx={{ color:"#747474"}}>
-      {intlFormat(new Date(timeStamps[currentSeconds]), time_options)} UTC
+      {timeStamps[currentSeconds-1].substr(11, 5)} UTC
       <HtmlTooltip
         title={
           <React.Fragment>

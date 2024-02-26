@@ -7,7 +7,7 @@ import NavBar from "../ui/navbar";
 import Player from "../ui/current/player";
 import Forecast from "../ui/current/forecast";
 import { useRouter } from 'next/navigation'
-import { format, startOfHour, startOfDay, formatISO, addHours, isAfter, setHours, getHours } from "date-fns";
+import { format, startOfHour, subHours, addHours, isAfter, setHours, getHours, toDate } from "date-fns";
 import Button from '@mui/material/Button';
 import useInterval from '../hooks/useInterval'
 import Dropdown from '../ui/dropdown';
@@ -165,7 +165,7 @@ export default function Page() {
 
   const isAfter12UTC = (currentTimestamp) => {
     // Convert the current timestamp to a Date object
-    const currentDate = new Date(currentTimestamp);
+    const currentDate = toDate(new Date(currentTimestamp));
   
     // Set the hours to 12:00 UTC
     const twelveUTC = setHours(currentDate, 12);
@@ -175,7 +175,7 @@ export default function Page() {
   }
 
   const generateTimestamps = () => {
-    const currentTimestamp = new Date(); // get as utc 
+    const currentTimestamp = toDate(new Date()); // get as utc
     const timestamps = [];
     const result = getHours(currentTimestamp)
     if(isAfter12UTC(currentTimestamp)){
@@ -186,7 +186,7 @@ export default function Page() {
 
       for (let i = 0; i < totalSeconds; i++) {
         const timestamp = startOfHour(addHours(setHours(currentTimestamp, 12), i));
-        const formattedTimestamp = timestamp.toISOString().slice(0, -5) + 'Z';
+        const formattedTimestamp = format(timestamp, "yyyy-MM-dd'T'HH:mm:ss'Z'");
         timestamps.push(formattedTimestamp);
       }
       return timestamps;
@@ -197,7 +197,7 @@ export default function Page() {
 
       for (let i = 0; i < totalSeconds; i++) {
         const timestamp = startOfHour(addHours(setHours(currentTimestamp, 0), i));
-        const formattedTimestamp = timestamp.toISOString().slice(0, -5) + 'Z';
+        const formattedTimestamp = format(timestamp, "yyyy-MM-dd'T'HH:mm:ss'Z'");
         timestamps.push(formattedTimestamp);
       }
   
