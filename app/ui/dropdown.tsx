@@ -2,8 +2,6 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import SearchIcon from '@mui/icons-material/Search';
 import Autocomplete from '@mui/material/Autocomplete';
 import community_names from "../../public/data/community_names.json";
 

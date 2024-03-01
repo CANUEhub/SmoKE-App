@@ -4,6 +4,7 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { styled } from '@mui/system';
+import Legend from '../ui/legend';
 
 const StyledContainer = styled(Container)({
   display: 'flex',
@@ -24,6 +25,7 @@ const LowResolutionScreen: React.FC = () => {
       <StyledMessage variant="h4">
         This website is not optimized for mobile devices or smaller screens.
       </StyledMessage>
+
     </StyledContainer>
   );
 };

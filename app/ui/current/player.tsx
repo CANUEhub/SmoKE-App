@@ -121,7 +121,16 @@ export default function Player({onPlaybackChange, onTimeChange, onStepChange, is
   }));
 
   return (
-    <Card sx={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', backdropFilter: 'blur(5px)', position:'absolute',left: '25vw', right: '25vw', marginLeft: 'auto', marginRight:'auto', bottom: '3%' }}>
+    <Card sx=
+      {{ 
+      backgroundColor: 'rgba(255, 255, 255, 0.6)', 
+      backdropFilter: 'blur(5px)',
+      position:'absolute',
+      left: '25vw', 
+      right: '25vw', 
+      marginLeft: 'auto', 
+      marginRight:'auto', 
+      bottom: '3%' }}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ flex: '1 0 auto' }}>
         {currentSeconds < totalSeconds ?

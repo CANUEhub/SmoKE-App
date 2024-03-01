@@ -19,6 +19,7 @@ import Image from 'next/image'
 import settlements from "../../public/data/settlements.json";
 import classes from "../page.module.css";
 import { log, table } from "console";
+import Legend from "../ui/legend";
 
 export default function Page() {
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -36,7 +37,7 @@ export default function Page() {
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [startSecondIndex, setStartSecondIndex] = useState(null);
   const [cursor, setCursor] = useState<string>('auto');
-  
+
   const totalSeconds = 71;
 
 
@@ -51,11 +52,11 @@ export default function Page() {
     if (!isAuthenticated) {
       // Redirect to the login page if not authenticated
       router.push('/auth');
-    } 
-    else if(isMobile || screenWidth < 1271) {
+    }
+    else if (isMobile || screenWidth < 1271) {
       router.push('/mobile');
     }
-    
+
   }, []);
   // layers 
 
@@ -103,6 +104,45 @@ export default function Page() {
 
   }
 
+  const LEGEND_THRESHOLDS = [
+    {
+      threshold: '1-10',
+      color: '#00CCFF'
+    },
+    {
+      threshold: '10-20',
+      color: '#0099CC'
+    },
+    {
+      threshold: '20-30',
+      color: '#006699'
+    },
+    {
+      threshold: '30-40',
+      color: '#FFFF00'
+    },
+    {
+      threshold: '40-50',
+      color: '#FFCC00'
+    },
+    {
+      threshold: '50-60',
+      color: '#FF6666'
+    },
+    {
+      threshold: '60-70',
+      color: '#FF0000'
+    },
+    {
+      threshold: '70-80',
+      color: '#CC0000'
+    },
+    {
+      threshold: '80-90',
+      color: '#990000'
+    }
+  ];
+
   const fetchForecast = (featureLayerID) => {
     console.log('featureLayer.id', featureLayerID)
     axios.get('/forecast', {
@@ -145,7 +185,7 @@ export default function Page() {
         });
       });
     } else if (featureLayer.layer.id === "unclustered-point") {
-       console.log(featureLayer.properties['Community_'])
+      console.log(featureLayer.properties['Community_'])
       // setCommunityName(featureLayer.properties['Community_'])
       setCommunityName(featureLayer.properties['Community_']);
       handleCommunityChange(featureLayer.properties.commid);
@@ -166,7 +206,7 @@ export default function Page() {
   const isAfter12UTC = (currentTimestamp) => {
     // Convert the current timestamp to a Date object
     const currentDate = toDate(new Date(currentTimestamp));
-  
+
     // Set the hours to 12:00 UTC
     const twelveUTC = setHours(currentDate, 12);
 
@@ -178,10 +218,10 @@ export default function Page() {
     const currentTimestamp = toDate(new Date()); // get as utc
     const timestamps = [];
     const result = getHours(currentTimestamp)
-    if(isAfter12UTC(currentTimestamp)){
-     
-      if(seconds === 0){
-        setSeconds(result-12);
+    if (isAfter12UTC(currentTimestamp)) {
+
+      if (seconds === 0) {
+        setSeconds(result - 12);
       }
 
       for (let i = 0; i < totalSeconds; i++) {
@@ -191,7 +231,7 @@ export default function Page() {
       }
       return timestamps;
     } else {
-      if(seconds === 0){
+      if (seconds === 0) {
         setSeconds(result);
       }
 
@@ -200,7 +240,7 @@ export default function Page() {
         const formattedTimestamp = format(timestamp, "yyyy-MM-dd'T'HH:mm:ss'Z'");
         timestamps.push(formattedTimestamp);
       }
-  
+
       return timestamps;
     }
   };
@@ -314,9 +354,9 @@ export default function Page() {
         >
           <NavigationControl position='bottom-right' />
           <NavBar onChildStateChange={handleCommunityChange}  ></NavBar>
-          <Dropdown 
-          onChildStateChange={handleCommunityChange}
-          communityName={communityName}/>
+          <Dropdown
+            onChildStateChange={handleCommunityChange}
+            communityName={communityName} />
           {layer && (
             <Source {...layer}>
               <Layer {...wmsLayer}></Layer>
@@ -328,7 +368,7 @@ export default function Page() {
             <Layer {...settlementClusterNumber} /> */}
             <Layer {...unclusteredSettlementPointLayer} />
           </Source>
-          
+
           {mapLoaded && (
 
             <Player
@@ -342,12 +382,13 @@ export default function Page() {
             />
           )}
 
-{mapLoaded && (
-
-<div id="legend-popup-content" style={{position:'absolute', right:0, top: '10vh'}}>
-<img id="legend-img" src=" https://geo.weather.gc.ca/geomet?version=1.3.0&service=WMS&request=GetLegendGraphic&sld_version=1.1.0&layer=RAQDPS-FW.SFC_PM2.5&format=image/png"/>
-</div>
-)}
+          {mapLoaded && (
+          <Legend
+            thresholds={LEGEND_THRESHOLDS}
+            unit={"PM2.5 (ug/m3)"}
+            historical={false}
+          />
+          )}
 
           {showPopup && (
             <Forecast

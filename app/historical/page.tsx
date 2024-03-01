@@ -8,6 +8,7 @@ import Sidebar from "../ui/historical/sidebar";
 import LayerButtons from "../ui/historical/layerButtons";
 import BottomChartBar from "../ui/historical/bottomChartBar";
 import { useRouter } from 'next/navigation'
+import Legend from "../ui/legend";
 import { format, startOfHour, formatISO, addHours } from "date-fns";
 import Dropdown from '../ui/dropdown';
 import axios from 'axios';
@@ -91,6 +92,34 @@ const LAYER_TYPES = {
     burn:'burn'
 }
 
+const AQHI_LEGEND_THRESHOLD = [
+  { threshold: '<= 1.00', color: '#2b83ba' },
+  { threshold: '1.00 - 1.25', color: '#67adb0' },
+  { threshold: '1.25 - 1.50', color: '#a3d7a5' },
+  { threshold: '1.50 - 1.75', color: '#e0f2b5' },
+  { threshold: '1.75 - 2.00', color: '#fee29d' },
+  { threshold: '2.00 - 2.50', color: '#f99f5a' },
+  { threshold: '> 2.5', color: '#d7191c' }
+];
+
+const PM25_LEGEND_THRESHOLD = [
+  { threshold: '<= 4', color: '#09cc1c' },
+  { threshold: '4 - 5', color: '#09cc1c' },
+  { threshold: '5 - 6', color: '#6bd854' },
+  { threshold: '6 - 7', color: '#d6e68f' },
+  { threshold: '7 - 8', color: '#ebf385' },
+  { threshold: '8 - 9', color: '#f9f67d' },
+  { threshold: '9 - 10', color: '#fbe679' },
+  { threshold: '10 - 11', color: '#fcd771' },
+  { threshold: '11 - 12', color: '#fbca65' },
+  { threshold: '12 - 35', color: '#673a0d' },
+  { threshold: '> 35', color: '#67000d' }
+];
+
+const LEGEND_THRESHOLD = {
+  aqhi:AQHI_LEGEND_THRESHOLD,
+  pm25:PM25_LEGEND_THRESHOLD
+}
 
   const onMapClick = (evt: mapboxgl.MapLayerMouseEvent) => {
 
@@ -185,6 +214,7 @@ const LAYER_TYPES = {
 
   const handleLayerChange = (layerType) => {
     setLayerType(layerType)
+    console.log('layerType', layerType);
     const newLayer = LayerTypes.find((layer)=> layer.id === layerType);
     setHistoricalLayer(newLayer);
     setYearArray(newLayer.years)
@@ -312,8 +342,16 @@ const LAYER_TYPES = {
           <LayerButtons 
             layerChange={handleLayerChange} 
             layerType={layerType}/>
+        
+        { bottomBarOpen && (
+            <Legend
+              thresholds={AQHI_LEGEND_THRESHOLD}
+              unit={'AQHI'}
+              historical={true}
+            />
+          )}
           { bottomBarOpen && (
-
+            
           <BottomChartBar
                   isOpen={bottomBarOpen}
                   isLoading={chartLoading}
