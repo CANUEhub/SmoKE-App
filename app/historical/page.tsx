@@ -121,6 +121,12 @@ const LEGEND_THRESHOLD = {
   pm25:PM25_LEGEND_THRESHOLD
 }
 
+const LEGEND_VALUE = {
+  aqhi:'AQHI',
+  pm25:'PM2.5 (ug/m3)'
+}
+
+
   const onMapClick = (evt: mapboxgl.MapLayerMouseEvent) => {
 
     if (!mapRef || !evt.features) {
@@ -345,8 +351,8 @@ const LEGEND_THRESHOLD = {
         
         { bottomBarOpen && (
             <Legend
-              thresholds={AQHI_LEGEND_THRESHOLD}
-              unit={'AQHI'}
+              thresholds={LEGEND_THRESHOLD[`${layerType}`]}
+              unit={LEGEND_VALUE[`${layerType}`]}
               historical={true}
             />
           )}
