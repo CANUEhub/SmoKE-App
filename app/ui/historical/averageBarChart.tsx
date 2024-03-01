@@ -17,6 +17,7 @@ const LAYER_TYPES_HEADING = {
 export default function AverageBarChart({ yearValue, layerType, barData }) {
     const theme = useTheme();
 
+    const communityYearAvgVar = layerType =='pm25' ? 'hcaco_pm25_avg' : 'hcaaqhi_avg';
     return (
         <Box
         sx={{
@@ -99,7 +100,7 @@ export default function AverageBarChart({ yearValue, layerType, barData }) {
                 <BarChart
                     xAxis={[{ scaleType: 'band', data: ['Community', 'National', 'Provincial'] }]}
                     series={[
-                        { label: 'Year Avg',data: [Number(barData['hcaco_pm25_avg']), Number(barData['haacanval']), Number(barData['haavalue'])] },
+                        { label: 'Year Avg',data: [Number(barData[`${communityYearAvgVar}`]), Number(barData['haacanval']), Number(barData['haavalue'])] },
                         { label: 'Long term Avg', data: [Number(barData['hclval']), Number(barData['halcanval']), Number(barData['halval'])] }]}
                     width={drawerWidth * 0.9}
                     height={drawerWidth * 0.75}
