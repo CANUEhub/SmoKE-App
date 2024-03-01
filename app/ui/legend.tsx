@@ -81,7 +81,7 @@ const currentStyle = {
   backgroundColor: 'rgba(255, 255, 255, 0.6)', 
   backdropFilter: 'blur(5px)',
   position: 'absolute',
-  bottom: '23%',
+  bottom: '190px',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   borderRadius: '10px'
