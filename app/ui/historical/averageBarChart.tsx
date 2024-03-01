@@ -16,8 +16,7 @@ const LAYER_TYPES_HEADING = {
 
 export default function AverageBarChart({ yearValue, layerType, barData }) {
     const theme = useTheme();
-
-    const communityYearAvgVar = layerType =='pm25' ? 'hcaco_pm25_avg' : 'hcaaqhi_avg';
+    const communityYearAvgVar = (layerType.id ==='pm25') ? 'hcaco_pm25_avg' : 'hcaaqhi_avg';
     return (
         <Box
         sx={{
