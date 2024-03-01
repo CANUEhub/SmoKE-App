@@ -55,7 +55,7 @@ export default function AverageBarChart({ yearValue, layerType, barData }) {
                     fontSize:25,
                     fontWeight:600    
                 }}>
-                    {barData['hcaco_pm25_avg']}
+                    {barData[`${communityYearAvgVar}`]}
                 </Typography>
                 <Typography
                 sx={{
