@@ -3,9 +3,10 @@ import conn from '../lib/db'
 
 // To handle a GET request to /api
 export async function GET(request) {
+  console.log(" alerts request", request);
   const id = request.nextUrl.searchParams.get("sett_id");
   try {
-    const res = await conn.query(`SELECT * FROM smoke.smoke_curfor WHERE commid='${id}'`);
+    const res = await conn.query(`SELECT DISTINCT * FROM smoke.alerts WHERE commid=${id}`);
     return NextResponse.json({ message: res.rows }, { status: 200 }); 
   } catch (error) {
     console.error(error);
@@ -30,15 +31,4 @@ export async function GET(request) {
 export async function POST(request) {
   // Do whatever you want
   return NextResponse.json({ message: "Hello World" }, { status: 200 });
-}
-
-// Same logic to add a `PATCH`, `DELETE`...
-
-async function retrieveData() {
-  try {
-    const res = await pool.query("SELECT * FROM aqhi_cur_temp");
-    console.log(res.rows);
-  } catch (error) {
-    console.error(error);
-  }
 }

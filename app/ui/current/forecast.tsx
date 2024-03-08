@@ -50,7 +50,7 @@ export default function Forecast({ forcastObject, settlementName, isLoading, han
                 <Typography sx={{color: "#747474", fontSize:12}}>
                         Last Updated
                     </Typography>
-
+                    {alert && (
                     <HtmlTooltip
                                 title={
                                     <React.Fragment>
@@ -62,10 +62,11 @@ export default function Forecast({ forcastObject, settlementName, isLoading, han
                                     </React.Fragment>
                                 }
                                 arrow
-                                placement="top"
+                                placement="bottom"
                             >
-                                <WarningIcon sx={{ marginLeft: "0.5rem", fontSize: "1rem", color: "#828282" }} />
+                                <WarningIcon sx={{ marginLeft: "0.5rem", fontSize: "1rem", color: "#CC0000" }} />
                             </HtmlTooltip>
+                    )}
                 </CardContent>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {isLoading ? (<CircularProgress color="success" />) : (
