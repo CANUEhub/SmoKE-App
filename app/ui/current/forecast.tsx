@@ -9,6 +9,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import ForecastCard from './forecastCard';
 import CircularProgress from '@mui/material/CircularProgress';
+import HtmlTooltip from '../htmlTooltip';
+import WarningIcon from '@mui/icons-material/Warning';
 
 const time = {
     'today': 'Today',
@@ -17,7 +19,7 @@ const time = {
 }
 
 
-export default function Forecast({ forcastObject, settlementName, isLoading, handleClose }) {
+export default function Forecast({ forcastObject, settlementName, isLoading, handleClose, alert }) {
     const theme = useTheme();
 
 
@@ -44,10 +46,26 @@ export default function Forecast({ forcastObject, settlementName, isLoading, han
 
 
                 </CardContent>
-                <CardContent sx={{paddingTop: 0, paddingBottom: 0}}>
+                <CardContent sx={{paddingTop: 0, paddingBottom: 0, display:'flex'}}>
                 <Typography sx={{color: "#747474", fontSize:12}}>
                         Last Updated
                     </Typography>
+
+                    <HtmlTooltip
+                                title={
+                                    <React.Fragment>
+                                        <Typography sx={{fontSize:"1rem", fontWeight:"700"}}color="#306282">Weather Alert</Typography>
+                                       <Typography sx={{textAlign:"left", padding:'0.5rem', fontSize:"0.9rem"}}>
+                                        {alert?.headline}
+                                        {alert?.description}
+                                       </Typography>
+                                    </React.Fragment>
+                                }
+                                arrow
+                                placement="top"
+                            >
+                                <WarningIcon sx={{ marginLeft: "0.5rem", fontSize: "1rem", color: "#828282" }} />
+                            </HtmlTooltip>
                 </CardContent>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 {isLoading ? (<CircularProgress color="success" />) : (

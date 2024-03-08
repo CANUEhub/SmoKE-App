@@ -33,6 +33,7 @@ export default function Page() {
   const [isRunning, setIsRunning] = useState(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [aqhiData, setAqhiData] = useState(null);
+  const [alerts, setAlerts] = useState(null);
   const [popupLoading, setPopupLoading] = useState<boolean>(false);
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [startSecondIndex, setStartSecondIndex] = useState(null);
@@ -151,9 +152,22 @@ export default function Page() {
       .then((response) => {
         console.log("response", response.data.message[0])
         setAqhiData(response.data.message[0]);
-        console.log("aqhi", aqhiData);
       }).finally(() => {
         setPopupLoading(false);
+      })
+      .catch((e) => { console.log(e) });
+  }
+
+  const fetchAlerts = (featureLayerID) => {
+    console.log('featureLayer.id', featureLayerID)
+    axios.get('/alerts', {
+      params: { sett_id: featureLayerID }
+    })
+      .then((response) => {
+        console.log("response alerts", response.data.message[0])
+        setAlerts(response.data.message[0]);
+      }).finally(() => {
+        //setPopupLoading(false);
       })
       .catch((e) => { console.log(e) });
   }
@@ -279,6 +293,7 @@ export default function Page() {
       return;
     }
     fetchForecast(value);
+    fetchAlerts(value);
     setShowPopup(true);
     setPopupLoading(true);
     const sett = features.find((feature, index) => {
@@ -396,6 +411,7 @@ export default function Page() {
               settlementName={communityName}
               isLoading={popupLoading}
               handleClose={handlePopupClose}
+              alert={alerts}
             />
           )}
 
