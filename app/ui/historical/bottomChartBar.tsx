@@ -1,21 +1,12 @@
 import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Paper from '@mui/material/Paper';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import ForecastCard from './forecastCard';
-import { ResponsiveChartContainer } from '@mui/x-charts/ResponsiveChartContainer';
-import { LineChart } from '@mui/x-charts/LineChart';
-import { Tooltip } from '@mui/x-charts';
+import { LineChart } from '@mui/x-charts';
 import { LinePlot, MarkPlot } from '@mui/x-charts/LineChart';
 import { ChartsXAxis } from '@mui/x-charts/ChartsXAxis';
 import { ChartsYAxis } from '@mui/x-charts/ChartsYAxis';
 import CircularProgress from '@mui/material/CircularProgress';
-import { mdiConsoleNetwork } from '@mdi/js';
 import { compareAsc } from "date-fns";
 
 const LAYER_TYPES = {
@@ -44,9 +35,17 @@ const LAYER_TYPES_HEADING = {
 
 export default function BottomChartBar({ isOpen, isLoading, spline, layerType }) {
 
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
     const timeArray = spline.map((data)=>{
         return new Date(data.day)
     }).sort(compareAsc);
+
+    const formatDate = (date) => {
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return monthNames[date.getMonth()];
+      };
+    
 
     const dataArray = spline.map((data)=>{
         return Number(data[LAYER_TYPES[layerType]]);
@@ -59,21 +58,17 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
         data: timeArray,
         scaleType: 'time',
         id: 'x-axis-id',
-        hideTooltip: true
+        hideTooltip: true,
+        tickLabelInterval: (value, index) => index !== 0 && index !== 12
       } 
-
-    const seriesConfig = {
-        type:'line',
-        data: dataArray,
-        showMark: false
-    }
     
+
     dataArray.map((x,y)=>{
         if (typeof x !=="number"){
             console.log('dataArray not num', `${x} ${y}`)
         }
     })
-    
+
     return (
         <Card sx={{ position: 'absolute', width:'70%', left:'30%', bottom:0}}>
 
@@ -92,7 +87,8 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
                             valueFormatter: (element) => `${element} ${LAYER_UNITS[layerType]}`
                         }
                     ]}
-                    />
+                    >
+                    </LineChart>
             //                      <ResponsiveChartContainer
             //     series={[
             //     {
