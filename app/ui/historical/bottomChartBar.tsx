@@ -59,6 +59,7 @@ export default function BottomChartBar({ isOpen, isLoading, spline, layerType })
         scaleType: 'time',
         id: 'x-axis-id',
         hideTooltip: true,
+        tickNumber: 12,
         tickLabelInterval: (value, index) => index !== 0 && index !== 12
       } 
     
