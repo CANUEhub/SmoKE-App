@@ -368,7 +368,7 @@ export default function Page() {
           onClick={onMapClick}
         >
           <NavigationControl position='bottom-right' />
-          <NavBar onChildStateChange={handleCommunityChange}  ></NavBar>
+          <NavBar></NavBar>
           <Dropdown
             onChildStateChange={handleCommunityChange}
             communityName={communityName} />

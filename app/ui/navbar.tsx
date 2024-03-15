@@ -49,7 +49,7 @@ export default function NavBar({ }) {
   const [community, setCommunity] = useState('');
   const [layer, setLayer] = useState('');
   const pageStrings = ['About', 'Current Forecast','Historical Data', 'Advisories', 'Contact Us' ];
-  const pages = ['about', 'current', 'historical','advisories', 'contact'];
+  const pages = ['about', 'current', 'historical', 'contact'];
 
   const linkObj = {
     'about': {url:'About'},

@@ -4,8 +4,13 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import { fromLonLat } from "ol/proj";
 import { Icon, Style } from "ol/style";
+import NavBar from "../ui/navbar";
 import { format, startOfHour, subHours, addHours, isAfter, setHours, getHours, toDate } from "date-fns";
+import Player from "../ui/current/player";
+import ThemeClient from "../ui/themeClient";
 import { useState } from "react";
+import Legend from "../ui/legend";
+
 const mapConfig = {
     "center": [0, 0],
 
@@ -16,6 +21,45 @@ const mapConfig = {
     "markerImage64" : "https://cdn2.iconfinder.com/data/icons/social-media-and-payment/64/-47-64.png"
 }
 
+const LEGEND_THRESHOLDS = [
+  {
+    threshold: '1-10',
+    color: '#00CCFF'
+  },
+  {
+    threshold: '10-20',
+    color: '#0099CC'
+  },
+  {
+    threshold: '20-30',
+    color: '#006699'
+  },
+  {
+    threshold: '30-40',
+    color: '#FFFF00'
+  },
+  {
+    threshold: '40-50',
+    color: '#FFCC00'
+  },
+  {
+    threshold: '50-60',
+    color: '#FF6666'
+  },
+  {
+    threshold: '60-70',
+    color: '#FF0000'
+  },
+  {
+    threshold: '70-80',
+    color: '#CC0000'
+  },
+  {
+    threshold: '80-90',
+    color: '#990000'
+  }
+];
+
 
 import MapPane from "../ui/mapPane";
 
@@ -25,7 +69,7 @@ const markersLonLat = [mapConfig.kansasCityLonLat, mapConfig.blueSpringsLonLat];
 const totalSeconds = 71;
 
 
-export default function Home() {
+export default function OpenLayers() {
   const [center, setCenter] = useState(mapConfig.center);
   const [zoom, setZoom] = useState(9);
 
@@ -33,6 +77,9 @@ export default function Home() {
   const [showLayer2, setShowLayer2] = useState(true);
   const [showMarker, setShowMarker] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [timestamp, setTimestamp] = useState(null);
+
 
   const isAfter12UTC = (currentTimestamp) => {
     // Convert the current timestamp to a Date object
@@ -43,6 +90,22 @@ export default function Home() {
 
     // Check if the current timestamp is after 12:00 UTC
     return isAfter(currentDate, twelveUTC);
+  }
+
+
+
+  const generateHourlyTimestamps = (startTime, endTime) => {
+    const timestamps = [];
+    let currentTimestamp = new Date(startTime);
+  
+    while (isAfter(new Date(endTime), currentTimestamp)) {
+      timestamps.push(format(currentTimestamp, "yyyy-MM-dd'T'HH:mm:ssxxx"));
+      currentTimestamp = addHours(currentTimestamp, 1);
+    }
+  
+    timestamps.push(format(new Date(endTime), "yyyy-MM-dd'T'HH:mm:ssxxx"));
+  
+    return timestamps;
   }
 
   const generateTimestamps = () => {
@@ -76,11 +139,44 @@ export default function Home() {
     }
   };
 
+  const handlePlayback = () => {
+    setIsRunning(!isRunning);
+  }
+
+  const handleTimeChange = (evt) => {
+
+    console.log("handle time change", evt.target.value);
+    setSeconds(evt.target.value);
+    setIsRunning(false);
+  }
+
+  const handleStepTimeChange = (time) => {
+
+    console.log("handle step time change", time);
+    setSeconds(time);
+    setIsRunning(false);
+
+
+  }
+
+  const getTimestamp = (timestamp) => {
+
+    setTimestamp(timestamp)
+  }
+
   const timestampsArray = generateTimestamps();
 
   return (
-    <div className="p-0 h-['100%']">
+    <main>
+      <ThemeClient>
+      <NavBar></NavBar>
       <MapPane/>
-    </div>
+      <Legend
+            thresholds={LEGEND_THRESHOLDS}
+            unit={"PM2.5 (ug/m3)"}
+            historical={false}
+          />
+      </ThemeClient>
+    </main>
   );
 }
