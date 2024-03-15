@@ -291,6 +291,26 @@ const isAfter12UTC = (currentTimestamp) => {
                 opacity: 0.7
             });
 
+            const aqhiVector = new VectorSource({
+                url: 'https://raw.githubusercontent.com/CANUEhub/SmoKE-App/main/public/data/settlements.json',
+                format: new GeoJSON()
+            });
+
+            const aqhiVectorLayer = new VectorLayer({
+                source: aqhiVector,
+                opacity: 1
+            });
+
+            aqhiVectorLayer.setStyle(
+                new Style({
+                    image: new Icon({
+                        crossOrigin: 'anonymous',
+                        src: 'https://img.icons8.com/nolan/64/map-pin.png',
+                        scale: 0.3,
+                    }),
+                })
+            );
+
             const pinLocLayer = new VectorLayer({
                 source: new VectorSource()
             });
@@ -304,7 +324,7 @@ const isAfter12UTC = (currentTimestamp) => {
             });
 
             const layerGroup = new LayerGroup({
-                layers: [airSurfaceTempLayer, raqdpsLayer, weatherAlertsLayer]
+                layers: [airSurfaceTempLayer, raqdpsLayer, weatherAlertsLayer, aqhiVectorLayer]
             });
 
             const attribution = new Attribution({
