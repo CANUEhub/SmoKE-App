@@ -28,23 +28,12 @@ import { defaults as defaultControls } from 'ol/control/defaults';
 import {MapboxVectorLayer} from 'ol-mapbox-style';
 import {applyStyle} from 'ol-mapbox-style';
 import VectorTileLayer from 'ol/layer/VectorTile.js'
-import Player from "../ui/current/player";
-import { format, startOfHour, subHours, addHours, isAfter, setHours, getHours, toDate } from "date-fns";
-
-const WeatherMapInfo = ({ radarTime }) => {
-    
-  return (
-      <div className='px-2 flex items-center py-3 content-evenly'>
-          <div className='text-sm md:text-base px-3'>
-              <p className='dark:text-slate-400'><span className='font-semibold'>Local Time: </span> {radarTime.local}</p>
-          </div>
-          <div className='text-sm md:text-base px-3'>
-              <p className='dark:text-slate-400'><span className='font-semibold'>UTC: </span> {radarTime.iso}</p>
-          </div>
-      </div>
-  )
-}
-
+import Player from "../ui/current/newPlayer";
+import { format, startOfHour, subHours, addHours, isAfter, setHours, getHours, toDate, set } from "date-fns";
+import axios from 'axios';
+import settlements from "../../public/data/settlements.json";
+import Forecast from "../ui/current/forecast";
+import Dropdown from './dropdown';
 
 const dateOptions = {
   year: 'numeric',
@@ -55,14 +44,6 @@ const dateOptions = {
   timeZoneName: 'short'
 };
 
-const dateOptions_1 = {
-  year: '2-digit',
-  month: 'short',
-  day: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  timeZoneName: 'short'
-}
 
 const layerSourceInfo = [
   { name: 'Air Surface Temperature', layer: 'GDPS.ETA_TT', url: 'https://geo.weather.gc.ca/geomet' },
@@ -95,14 +76,17 @@ const MapPane = () => {
     const [layerLegendList, setLayerLegendList] = useState([]);
     const [aqhiChartData, setAqhiChartData] = useState([]);
     const [isMapLoading, setIsMapLoading] = useState(true);
-    const { t, i18n } = useTranslation();
     const [seconds, setSeconds] = useState(0);
     const [isTimestampLoaded, setIsTimestampLoaded] = useState(false);
-    //const [timestampsArray, setTimestampsArray] = useState([]);
+    const [timeChangeHappened, setTimeChangeHappened] = useState(false);
+    const [prevFeature, setPrevFeature] = useState(null);
+    const [showPopup, setShowPopup] = useState<boolean>(false);
+    const [popupLoading, setPopupLoading] = useState<boolean>(false);
+    const [aqhiData, setAqhiData] = useState(null);
+    const [communityName, setCommunityName] = useState('');
+    const [alerts, setAlerts] = useState(null);
 
-    const totalSeconds = 71;
-    const _alertsPopup = t('alerts', { returnObjects: true });
-    const _aqhiPopup = t('aqhi', { returnObjects: true });
+    const totalSeconds = 73;
     const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
     const closePopup = (e) => {
         e.target.parentElement.setAttribute('class', 'invisible');
@@ -114,77 +98,95 @@ const MapPane = () => {
     }
 
     const handleTimeChange = (evt) => {
-
-        console.log("handle time change", evt.target.value);
         setSeconds(evt.target.value);
-
-        const allLayers = map?.current.getAllLayers();
-        const getSmokeLayer = allLayers.find((item) => item.values_.title === layerSourceInfo[1].name);
-        console.log('getSmokeLayer', getSmokeLayer);
-
-        setRadarTime(radarTime => {
-            var radarCurrTime = new Date(radarTime.current);
-                radarCurrTime.setUTCMinutes(radarCurrTime.getUTCMinutes() + 60);
-            var localTime = radarCurrTime.toLocaleString(navigator.local, dateOptions);
-            var newRadarCurrTime = timestampsArray[evt.target.value];
-            getSmokeLayer.getSource().updateParams({ 'TIME': newRadarCurrTime });
-            console.log('getSmokeLayer.getSource()', getSmokeLayer.getSource());
-            var isoTime = radarCurrTime.toISOString().substring(0, 16) + "Z";
-
-            console.log('handleTimeChange isoTime', isoTime);
-            console.log('radarTime', radarTime);
-
-            return {
-                ...radarTime,
-                current: newRadarCurrTime,
-                local: localTime,
-                iso: isoTime
-            }
-        });
-        setIsClickPlayBtn(true);
+        setTimeChangeHappened(true);
         setIsClickPlayBtn(false);
       }
     
       const handleStepTimeChange = (time) => {
     
-        console.log("handle step time change", time);
+
         setSeconds(time);
+        setTimeChangeHappened(true);
         setIsClickPlayBtn(false);
     
     
       }
 
-      // Helper function to add leading zeros to single digit numbers
-const addLeadingZero = (num) => (num < 10 ? `0${num}` : num);
+      const handlePopupClose = () => {
+        setPopupLoading(false);
+        setShowPopup(false);
+      }
+    
 
-// Function to generate 72-hour intervals between two timestamps
-const generateIntervals = (startTimestamp, endTimestamp) => {
-  const intervals = [];
-  const start = new Date(startTimestamp);
-  const end = new Date(endTimestamp);
+      const fetchForecast = (featureLayerID) => {
+        axios.get('/forecast', {
+          params: { sett_id: featureLayerID }
+        })
+          .then((response) => {
+            console.log("response", response.data.message[0])
+            setAqhiData(response.data.message[0]);
+          }).finally(() => {
+            setPopupLoading(false);
+          })
+          .catch((e) => { console.log(e) });
+      }
 
-  // Calculate the time difference in milliseconds
-  const timeDiff = end - start;
-  const hourDiff = 1000 * 60 * 60;
+      const fetchAlerts = (featureLayerID) => {
+        console.log('featureLayer.id', featureLayerID)
+        axios.get('/alerts', {
+          params: { sett_id: featureLayerID }
+        })
+          .then((response) => {
+            console.log("response alerts", response.data.message[0])
+            setAlerts(response.data.message[0]);
+          }).finally(() => {
+            //setPopupLoading(false);
+          })
+          .catch((e) => { console.log(e) });
+      }
 
-  // Calculate the number of intervals
-  const numIntervals = 72;
+      const handleCommunityChange = (value) => {
+        if (value === '') {
+          return;
+        }
+        fetchForecast(value);
+        fetchAlerts(value);
+        setShowPopup(true);
+        setPopupLoading(true);
 
-  // Generate intervals
-  for (let i = 0; i < numIntervals; i++) {
-    const intervalTime = new Date(start.getTime() + i * (timeDiff / numIntervals));
-    const year = intervalTime.getUTCFullYear();
-    const month = addLeadingZero(intervalTime.getUTCMonth() + 1);
-    const date = addLeadingZero(intervalTime.getUTCDate());
-    const hours = addLeadingZero(intervalTime.getUTCHours());
-    const minutes = addLeadingZero(intervalTime.getUTCMinutes());
-    const seconds = addLeadingZero(intervalTime.getUTCSeconds());
+        const layers = map?.current.getLayers().array_;
+        const findLayerGroup = layers.find((item) => item.values_.id === 'LayerGroup');
+        const settlementLayer = findLayerGroup.getLayers().array_.find((layer) => layer instanceof VectorLayer);
+        const markerSource = settlementLayer.getSource();
+        markerSource.forEachFeature(function(feature){
+            const style = new Style({
+                image: new CircleStyle({
+                    radius: 5,
+                    fill: new Fill({
+                        color: '#16a34a',
+                    }),
+                    stroke: new Stroke({ color: 'white', width: 1.5 }),
+                })
+            });
+            feature.setStyle(style);
+        });
+        const markers = markerSource.getFeatures()
+        const marker = markers.find((element) => element.values_.commid == value)
 
-    intervals.push(`${year}-${month}-${date}T${hours}:${minutes}:${seconds}Z`);
-  }
+        map?.current.getView().fit(marker.getGeometry())
+        marker.setStyle(new Style({
+            image: new CircleStyle({
+                radius: 8,
+                fill: new Fill({
+                    color: '#16a34a',
+                }),
+                stroke: new Stroke({ color: '#FFAC1C', width: 2 }),
+            })
+        }))
+      }
 
-  return intervals;
-};
+
 
 const isAfter12UTC = (currentTimestamp) => {
     // Convert the current timestamp to a Date object
@@ -209,7 +211,7 @@ const isAfter12UTC = (currentTimestamp) => {
 
       for (let i = 0; i < totalSeconds; i++) {
         const timestamp = startOfHour(addHours(setHours(currentTimestamp, 12), i));
-        const formattedTimestamp = format(timestamp, "yyyy-MM-dd'T'HH:mm'Z'");
+        const formattedTimestamp = format(timestamp, "yyyy-MM-dd'T'HH:mm:ss'Z'");
         timestamps.push(formattedTimestamp);
       }
       return timestamps;
@@ -230,10 +232,8 @@ const isAfter12UTC = (currentTimestamp) => {
 
   const timestampsArray = generateTimestamps();
 
-  // console.log('mapPane timestampsArray:', timestampsArray);
 
     const initMap = useCallback(() => {
-
         if (mapRef.current) {
 
             const overlay = new Overlay({
@@ -296,20 +296,41 @@ const isAfter12UTC = (currentTimestamp) => {
                 format: new GeoJSON()
             });
 
+
+
             const aqhiVectorLayer = new VectorLayer({
                 source: aqhiVector,
                 opacity: 1
             });
 
+
             aqhiVectorLayer.setStyle(
                 new Style({
-                    image: new Icon({
-                        crossOrigin: 'anonymous',
-                        src: 'https://img.icons8.com/nolan/64/map-pin.png',
-                        scale: 0.3,
-                    }),
+                    image: new CircleStyle({
+                        radius: 5,
+                        fill: new Fill({
+                            color: '#16a34a',
+                        }),
+                        stroke: new Stroke({ color: 'white', width: 1.5 }),
+                    })
                 })
             );
+            
+
+            //     const pinLocStyle = new Style({
+            //         image: pinLocCircle,
+            //     });
+
+            //     const pinFeature = new Feature({
+            //         geometry: new Point(aqhiVector),
+            //     });
+
+            //     const pinLayerSource = new VectorSource({
+            //         features: [pinFeature]
+            //     });
+
+            //     aqhiVectorLayer.setSource(pinLayerSource);
+            //     aqhiVectorLayer.setStyle(pinLocStyle);
 
             const pinLocLayer = new VectorLayer({
                 source: new VectorSource()
@@ -324,6 +345,7 @@ const isAfter12UTC = (currentTimestamp) => {
             });
 
             const layerGroup = new LayerGroup({
+                id:'LayerGroup',
                 layers: [airSurfaceTempLayer, raqdpsLayer, weatherAlertsLayer, aqhiVectorLayer]
             });
 
@@ -367,46 +389,63 @@ const isAfter12UTC = (currentTimestamp) => {
                 setIsMapLoading(false);
             });
 
-            // map?.current.on('singleclick', function (event) {
+            map?.current.on('singleclick', function (event) {
 
-            //     const coordinate = event.coordinate;
-            //     const toStringCoordinate = toStringXY(toLonLat(coordinate), 4);
+                const feature = map.current.forEachFeatureAtPixel(event.pixel, (feature) => {
+                    return feature
+                   })
 
-            //     const pinLocCircle = new CircleStyle({
-            //         radius: 5,
-            //         fill: new Fill({
-            //             color: '#16a34a',
-            //         }),
-            //         stroke: new Stroke({ color: '#22d3ee', width: 1 }),
-            //     });
-            //     const pinLocStyle = new Style({
-            //         image: pinLocCircle,
-            //     });
 
-            //     const pinFeature = new Feature({
-            //         geometry: new Point(event.coordinate),
-            //     });
+                
+                   if(feature instanceof Feature){
+                    // Fit the feature geometry or extent based on the given map
 
-            //     const pinLayerSource = new VectorSource({
-            //         features: [pinFeature]
-            //     });
+                    const layers = map?.current.getLayers().array_;
+                    const findLayerGroup = layers.find((item) => item.values_.id === 'LayerGroup');
+                    const settlementLayer = findLayerGroup.getLayers().array_.find((layer) => layer instanceof VectorLayer);
+                    const markerSource = settlementLayer.getSource();
+                    markerSource.forEachFeature(function(feature){
+            
+                        const style = new Style({
+                            image: new CircleStyle({
+                                radius: 5,
+                                fill: new Fill({
+                                    color: '#16a34a',
+                                }),
+                                stroke: new Stroke({ color: 'white', width: 1.5 }),
+                            })
+                        });
+                        feature.setStyle(style);
+                    });
 
-            //     pinLocLayer.getSource().clear();
-            //     pinLocLayer.setSource(pinLayerSource);
-            //     pinLocLayer.setStyle(pinLocStyle);
+                    const commid = feature.get('commid')
+                    fetchForecast(commid);
+                    fetchAlerts(commid);
+                    setShowPopup(true);
+                    setPopupLoading(true);
+                    setCommunityName(feature.get('Community_'));
+                    feature.setStyle(new Style({
+                        image: new CircleStyle({
+                            radius: 8,
+                            fill: new Fill({
+                                color: '#16a34a',
+                            }),
+                            stroke: new Stroke({ color: '#FFAC1C', width: 2 }),
+                        })
+                    }))
+                    map.current.getView().fit(feature.getGeometry())
+                    // map.getView().fit(feature.getGeometry().getExtent())
+                  }
 
-            //     overlay.setPosition(coordinate);
-            //     setIsLoading(true);
+                // const coordinate = event.coordinate;
+                // const toStringCoordinate = toStringXY(toLonLat(coordinate), 4);
 
-            //     //findAqhiFeatures(coordinate);
-            //     findAstFeatures(coordinate);
-            //     findAlertsFeatures(coordinate);
+                
+                // overlay.setPosition(coordinate);
+                // setIsLoading(true);
 
-            //     setAirTableData(data => {
-            //         return { ...data, coordinate: toStringCoordinate }
-            //     });
 
-            // });
+            });
 
             setLayerGroupList(layerGroup.getLayers());
             setLayerLegendList(layerGroup.getLayers());
@@ -421,10 +460,9 @@ const isAfter12UTC = (currentTimestamp) => {
         //setIsTimestampLoaded(true);
         
 
-    }, [airQualityLayerId, airTempLayerId, weatherAlertsLayerId, i18n]);
+    }, [airQualityLayerId, airTempLayerId, weatherAlertsLayerId]);
 
     useEffect(() => {
-
 
         initMap();
 
@@ -439,9 +477,6 @@ const isAfter12UTC = (currentTimestamp) => {
                     const result = await response.text();
                     const xmlDoc = new DOMParser().parseFromString(result, "text/xml");
                     const [startTime, endTime] = xmlDoc.getElementsByTagName('Dimension')[0].innerHTML.split('/')
-                    const timestamp = generateIntervals(startTime,endTime);
-                    // console.log('timestamps', timestamp);
-                    // setTimestampsArray(timestamp);
                     const defaultTime = xmlDoc.getElementsByTagName('Dimension')[0].getAttribute('default')
                     const utcTime = new Date(defaultTime);
                     const localTime = utcTime.toLocaleString(navigator.local, dateOptions);
@@ -469,30 +504,49 @@ const isAfter12UTC = (currentTimestamp) => {
 
         const allLayers = map?.current.getAllLayers();
         const getSmokeLayer = allLayers.find((item) => item.values_.title === layerSourceInfo[1].name);
+        
         var _radarInterval;
-        if (isClickPlayBtn) {
 
+        if(timeChangeHappened) {
+            
+            //getSmokeLayer.getSource().updateParams({ 'TIME': timestampsArray[seconds] });
+            setRadarTime((radarTime) => {
+                var radarCurrTime = new Date(radarTime.current);
+                    radarCurrTime.setUTCMinutes(radarCurrTime.getUTCMinutes() + 60);
+                var localTime = radarCurrTime.toLocaleString(navigator.local, dateOptions);
+                var newRadarCurrTime = timestampsArray[seconds]
+
+                    getSmokeLayer.getSource().updateParams({ 'TIME': newRadarCurrTime });
+                var isoTime = radarCurrTime.toISOString().substring(0, 16) + "Z";
+                const payload =  {
+                    ...radarTime,
+                    current: newRadarCurrTime,
+                    local: localTime,
+                    iso: isoTime
+                }
+
+                return payload
+            });
+            //getSmokeLayer.getSource().updateParams({ 'TIME': newRadarCurrTime });
+            setTimeChangeHappened(false);
+        }
+        if (isClickPlayBtn) {
             _radarInterval = setInterval(() => {
-                setRadarTime(radarTime => {
+                setRadarTime((radarTime) => {
                     var radarCurrTime = new Date(radarTime.current);
                         radarCurrTime.setUTCMinutes(radarCurrTime.getUTCMinutes() + 60);
                     var localTime = radarCurrTime.toLocaleString(navigator.local, dateOptions);
                     var newRadarCurrTime = new Date(radarCurrTime).toISOString().split('.')[0] + 'Z';
-                    console.log('newRadarCurrTime', newRadarCurrTime);
+                    
                         getSmokeLayer.getSource().updateParams({ 'TIME': newRadarCurrTime });
-                    var isoTime = radarCurrTime.toISOString().substring(0, 16) + "Z";
-                    console.log('isoTime type', typeof isoTime);
-                    console.log('isoTime type', isoTime);
-                    console.log('radarTime', radarTime);
+                    var isoTime = radarCurrTime.toISOString().substring(0, 19) + "Z";
+
 
                     const secondIndex = timestampsArray.findIndex((element,index) =>{ 
-                        //console.log('element', element)
                         return element == isoTime
                     });
-                    console.log('secondIndex ', secondIndex)
                     
-
-                    if (isoTime >= radarTime.end) {
+                    if (seconds == 72) {
                         setSeconds(0);
                         return {
                             ...radarTime,
@@ -502,12 +556,13 @@ const isAfter12UTC = (currentTimestamp) => {
                         }
                     }
                     setSeconds(secondIndex);
-                    return {
+                    const payload2 = {
                         ...radarTime,
                         current: newRadarCurrTime,
                         local: localTime,
                         iso: isoTime
                     }
+                    return payload2
                 });
             }, 1000 / 1.0);
 
@@ -520,7 +575,7 @@ const isAfter12UTC = (currentTimestamp) => {
             clearInterval(_radarInterval)
         };
 
-    }, [initMap, isClickPlayBtn, isNewTimeVal, seconds]);
+    }, [initMap, isClickPlayBtn, isNewTimeVal, seconds, radarTime, handleTimeChange]);
 
     const sectionRef = useRef(null);
 
@@ -542,6 +597,18 @@ const isAfter12UTC = (currentTimestamp) => {
 
 
                         </div>
+                        <Dropdown
+            onChildStateChange={handleCommunityChange}
+            communityName={communityName} />
+                        {showPopup && (
+            <Forecast
+              forcastObject={aqhiData}
+              settlementName={communityName}
+              isLoading={popupLoading}
+              handleClose={handlePopupClose}
+              alert={alerts}
+            />
+          )}
                             <Player
               onPlaybackChange={handlePlayBtn}
               onTimeChange={handleTimeChange}

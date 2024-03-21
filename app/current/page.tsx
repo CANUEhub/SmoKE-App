@@ -292,6 +292,7 @@ export default function Page() {
     if (value === '') {
       return;
     }
+    console.log('value', value);
     fetchForecast(value);
     fetchAlerts(value);
     setShowPopup(true);

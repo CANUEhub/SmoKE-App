@@ -164,7 +164,7 @@ export default function OpenLayers() {
     setTimestamp(timestamp)
   }
 
-  const timestampsArray = generateTimestamps();
+  //const timestampsArray = generateTimestamps();
 
   return (
     <main>
